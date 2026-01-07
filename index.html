@@ -5,141 +5,123 @@
 <title>補助金サポート Canvas</title>
 
 <style>
-/* ------------------------------
-   全体デザイン
------------------------------- */
+/* 全体デザイン */
 body {
     font-family: "Helvetica", "Arial", sans-serif;
-    max-width: 900px;
+    max-width: 960px;
     margin: auto;
     padding: 30px;
     background: linear-gradient(135deg, #eef2f3, #dfe9f3);
     color: #333;
 }
 
-/* タイトル */
+/* タイトル・説明 */
 h1 {
     text-align: center;
-    margin-bottom: 20px;
-    font-size: 30px;
+    margin-bottom: 16px;
+    font-size: 28px;
     font-weight: bold;
     color: #2c3e50;
 }
-
-/* サブ説明 */
-p {
+p.lead {
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 32px;
     color: #555;
-    font-size: 16px;
+    font-size: 15px;
 }
 
 /* 入力フォームのカード */
 form {
     background: #ffffff;
-    padding: 30px;
+    padding: 26px;
     border-radius: 16px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    margin-bottom: 30px;
-    animation: fadeIn 0.6s ease;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    margin-bottom: 24px;
 }
 
-/* ラベル */
+/* ラベル・入力欄 */
 label {
     font-weight: bold;
     display: block;
-    margin-bottom: 8px;
-    margin-top: 20px;
+    margin-bottom: 6px;
+    margin-top: 18px;
     color: #34495e;
+    font-size: 14px;
 }
-
-/* テキストエリア */
 textarea {
     width: 100%;
-    height: 120px;
-    padding: 14px;
-    border: 1px solid #ccc;
+    min-height: 110px;
+    padding: 12px;
+    border: 1px solid #ccd1d9;
     border-radius: 10px;
     resize: vertical;
-    font-size: 15px;
+    font-size: 14px;
     background: #fafafa;
     transition: 0.2s;
 }
-
 textarea:focus {
     border-color: #4a90e2;
     background: #fff;
     outline: none;
-    box-shadow: 0 0 6px rgba(74,144,226,0.4);
+    box-shadow: 0 0 6px rgba(74,144,226,0.35);
 }
 
 /* ボタン */
 button {
-    padding: 14px 24px;
-    font-size: 17px;
+    padding: 12px 22px;
+    font-size: 15px;
     border-radius: 10px;
     border: none;
     cursor: pointer;
-    margin-top: 20px;
+    margin-top: 18px;
     transition: 0.2s;
 }
-
-/* 作成ボタン */
 button.generate {
     background: #4a90e2;
-    color: white;
-    margin-right: 10px;
+    color: #fff;
+    margin-right: 8px;
 }
-
 button.generate:hover {
     background: #357ab8;
 }
-
-/* 停止ボタン */
 button.stop {
     background: #ccc;
     color: #333;
 }
-
 button.stop:hover {
     background: #b5b5b5;
 }
 
-/* 結果表示エリア */
+/* メッセージと結果表示 */
+#message {
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: #e8f4ff;
+    border-left: 4px solid #4a90e2;
+    border-radius: 8px;
+    font-size: 14px;
+    display: none;
+}
 #result {
+    margin-top: 20px;
     background: #ffffff;
-    padding: 25px;
+    padding: 22px;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     white-space: pre-wrap;
-    font-size: 16px;
+    font-size: 14px;
     line-height: 1.7;
-    animation: fadeIn 0.6s ease;
-}
-
-/* メッセージ表示 */
-#message {
-    margin-top: 20px;
-    padding: 15px;
-    background: #e8f4ff;
-    border-left: 5px solid #4a90e2;
-    border-radius: 8px;
-    font-size: 16px;
-    display: none;
-}
-
-/* フェードインアニメーション */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
 }
 
 /* スマホ対応 */
 @media (max-width: 600px) {
-    body { padding: 15px; }
-    h1 { font-size: 24px; }
-    textarea { height: 100px; }
-    button { width: 100%; margin-bottom: 10px; }
+    body { padding: 16px; }
+    h1 { font-size: 22px; }
+    p.lead { font-size: 14px; }
+    form { padding: 18px; }
+    textarea { font-size: 13px; min-height: 90px; }
+    button { width: 100%; margin-right: 0; margin-bottom: 8px; }
+    #result { font-size: 13px; padding: 16px; }
 }
 </style>
 </head>
@@ -147,30 +129,30 @@ button.stop:hover {
 <body>
 
 <h1>補助金サポート Canvas</h1>
-<p>必要事項を入力すると、AI が補助金申請に必要な文章を生成します。</p>
+<p class="lead">必要事項を入力すると、AI が補助金申請に必要な事業計画の文章を生成します。</p>
 
 <form id="form">
 
     <label>① 解決したい課題：</label>
-    <textarea id="problem"></textarea>
+    <textarea id="problem" placeholder="例）新型設備を導入し、対応可能な範囲を広げたい"></textarea>
 
     <label>②-1 事業を始めてからのいきさつ：</label>
-    <textarea id="history"></textarea>
+    <textarea id="history" placeholder="例）創業の背景、事業開始の理由、これまでの経緯など"></textarea>
 
     <label>②-2 所在地（立地条件や商圏など）：</label>
-    <textarea id="location"></textarea>
+    <textarea id="location" placeholder="例）国道沿いで車の通行量が多い／駅から徒歩5分／商圏人口○万人 など"></textarea>
 
-    <label>②-3 取り扱い商品・サービス：</label>
-    <textarea id="products"></textarea>
+    <label>②-3 取り扱い商品・サービス（売れ筋やおすすめポイントなど）：</label>
+    <textarea id="products" placeholder="例）主力商品、売れ筋商品、サービスの特徴、他店との違いなど"></textarea>
 
-    <label>②-4 強みと経営課題：</label>
-    <textarea id="strengths"></textarea>
+    <label>②-4 強みと経営課題（補助事業をすることにからめて）：</label>
+    <textarea id="strengths" placeholder="例）強み：○○、課題：○○。補助事業でどのように改善したいか など"></textarea>
 
     <label>③ 補助金申請をしたいもの（具体的に）：</label>
-    <textarea id="apply"></textarea>
+    <textarea id="apply" placeholder="例）最新型の冷凍設備を導入し、取扱商品の幅を広げたい"></textarea>
 
     <button type="button" class="generate" onclick="generatePrompt()">作成</button>
-    <button type="button" class="stop" onclick="stop()">停止</button>
+    <button type="button" class="stop" onclick="stopGenerate()">停止</button>
 </form>
 
 <div id="message"></div>
@@ -178,19 +160,14 @@ button.stop:hover {
 
 <script>
 function generatePrompt() {
-
-    // Copilot をバックグラウンドで開く（画面遷移しない）
-    window.open("https://copilot.microsoft.com", "_blank", "noopener");
-
-    const problem = document.getElementById("problem").value;
-    const history = document.getElementById("history").value;
-    const location = document.getElementById("location").value;
-    const products = document.getElementById("products").value;
+    const problem   = document.getElementById("problem").value;
+    const history   = document.getElementById("history").value;
+    const location  = document.getElementById("location").value;
+    const products  = document.getElementById("products").value;
     const strengths = document.getElementById("strengths").value;
-    const apply = document.getElementById("apply").value;
+    const apply     = document.getElementById("apply").value;
 
-    const prompt = `
-あなたは補助金申請の専門家です。
+    const prompt = `あなたは補助金申請の専門家です。
 以下の情報をもとに、補助金申請に必要な事業計画の文章を体系的に生成してください。
 
 【事業者が入力した内容】
@@ -243,20 +220,36 @@ ${apply}
 12. 取組の効果
 業務効率化や生産性向上につながる場合、その効果を定量・定性の両面から説明してください。
 13. 効果の試算（数値を含めて、結びの言葉も生成）
-売上増加・業務効率化・時間削減などを、具体的な金額・時間・割合などの数値を用いて試算し、最後に結びの言葉を生成してください。
-`;
+売上増加・業務効率化・時間削減などを、具体的な金額・時間・割合などの数値を用いて試算し、最後に結びの言葉を生成してください。`;
 
+    // 画面に表示
     document.getElementById("result").textContent = prompt;
 
+    // コピー完了メッセージを先に非表示に
+    const msg = document.getElementById("message");
+    msg.style.display = "none";
+
+    // クリップボードにコピー
     navigator.clipboard.writeText(prompt).then(() => {
-        const msg = document.getElementById("message");
+        msg.textContent = "プロンプトをコピーしました！ブラウザ上部の Copilot のタブに移動し、貼り付けて実行してください。";
         msg.style.display = "block";
-        msg.textContent = "プロンプトをコピーしました！開いた Copilot のタブに移動し、貼り付けてください。";
+    }).catch(() => {
+        msg.textContent = "プロンプトのコピーに失敗しました。手動でテキストを選択し、コピーしてください。";
+        msg.style.display = "block";
     });
+
+    // Copilot を新しいタブで開く（画面はこのまま）
+    try {
+        window.open("https://copilot.microsoft.com", "_blank", "noopener");
+    } catch (e) {
+        // ポップアップブロックされた場合は何もしない
+    }
 }
 
-function stop() {
+function stopGenerate() {
     document.getElementById("result").textContent = "生成を停止しました。";
+    const msg = document.getElementById("message");
+    msg.style.display = "none";
 }
 </script>
 
