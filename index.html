@@ -222,19 +222,28 @@ ${apply}
 13. 効果の試算（数値を含めて、結びの言葉も生成）
 売上増加・業務効率化・時間削減などを、具体的な金額・時間・割合などの数値を用いて試算し、最後に結びの言葉を生成してください。`;
 
+    // 画面に表示
     document.getElementById("result").textContent = prompt;
 
+    // メッセージエリアをいったん消す
     const msg = document.getElementById("message");
     msg.style.display = "none";
 
+    // クリップボードにコピー
     navigator.clipboard.writeText(prompt).then(() => {
         msg.textContent = "プロンプトをコピーしました！ブラウザ上部の Copilot のタブに移動し、貼り付けて実行してください。";
         msg.style.display = "block";
+    }).catch(() => {
+        msg.textContent = "プロンプトのコピーに失敗しました。画面下のテキストを手動で選択し、コピーしてください。";
+        msg.style.display = "block";
     });
 
+    // Copilot を新しいタブで開く（画面はこのまま）
     try {
         window.open("https://copilot.microsoft.com", "_blank", "noopener");
-    } catch (e) {}
+    } catch (e) {
+        // ポップアップブロック時は何もしない
+    }
 }
 
 function stopGenerate() {
