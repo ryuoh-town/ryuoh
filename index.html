@@ -4,94 +4,108 @@
 <meta charset="UTF-8">
 <title>補助金サポート Canvas</title>
 
-<!-- CSS -->
 <style>
+/* ------------------------------
+   全体デザイン
+------------------------------ */
 body {
     font-family: "Helvetica", "Arial", sans-serif;
     max-width: 900px;
     margin: auto;
     padding: 30px;
-    background: #f0f2f5;
+    background: linear-gradient(135deg, #eef2f3, #dfe9f3);
     color: #333;
 }
 
+/* タイトル */
 h1 {
     text-align: center;
-    margin-bottom: 30px;
-    font-size: 28px;
-    color: #222;
+    margin-bottom: 20px;
+    font-size: 30px;
+    font-weight: bold;
+    color: #2c3e50;
 }
 
+/* サブ説明 */
 p {
     text-align: center;
     margin-bottom: 40px;
     color: #555;
+    font-size: 16px;
 }
 
+/* 入力フォームのカード */
 form {
     background: #ffffff;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
     margin-bottom: 30px;
+    animation: fadeIn 0.6s ease;
 }
 
+/* ラベル */
 label {
     font-weight: bold;
     display: block;
     margin-bottom: 8px;
     margin-top: 20px;
-    color: #333;
+    color: #34495e;
 }
 
+/* テキストエリア */
 textarea {
     width: 100%;
     height: 120px;
     padding: 14px;
     border: 1px solid #ccc;
-    border-radius: 8px;
+    border-radius: 10px;
     resize: vertical;
-    font-size: 16px;
+    font-size: 15px;
     background: #fafafa;
-    transition: border-color 0.2s, background 0.2s;
+    transition: 0.2s;
 }
 
 textarea:focus {
     border-color: #4a90e2;
     background: #fff;
     outline: none;
+    box-shadow: 0 0 6px rgba(74,144,226,0.4);
 }
 
+/* ボタン */
 button {
     padding: 14px 24px;
     font-size: 17px;
-    border-radius: 8px;
+    border-radius: 10px;
     border: none;
     cursor: pointer;
     margin-top: 20px;
+    transition: 0.2s;
 }
 
-button:nth-of-type(1) {
+/* 作成ボタン */
+button.generate {
     background: #4a90e2;
     color: white;
     margin-right: 10px;
-    transition: background 0.2s;
 }
 
-button:nth-of-type(1):hover {
+button.generate:hover {
     background: #357ab8;
 }
 
-button:nth-of-type(2) {
+/* 停止ボタン */
+button.stop {
     background: #ccc;
     color: #333;
-    transition: background 0.2s;
 }
 
-button:nth-of-type(2):hover {
+button.stop:hover {
     background: #b5b5b5;
 }
 
+/* 結果表示エリア */
 #result {
     background: #ffffff;
     padding: 25px;
@@ -100,44 +114,32 @@ button:nth-of-type(2):hover {
     white-space: pre-wrap;
     font-size: 16px;
     line-height: 1.7;
+    animation: fadeIn 0.6s ease;
 }
 
-/* スマホ最適化 */
+/* メッセージ表示 */
+#message {
+    margin-top: 20px;
+    padding: 15px;
+    background: #e8f4ff;
+    border-left: 5px solid #4a90e2;
+    border-radius: 8px;
+    font-size: 16px;
+    display: none;
+}
+
+/* フェードインアニメーション */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* スマホ対応 */
 @media (max-width: 600px) {
-    body {
-        padding: 15px;
-    }
-    h1 {
-        font-size: 22px;
-        margin-bottom: 20px;
-    }
-    p {
-        font-size: 14px;
-        margin-bottom: 25px;
-    }
-    form {
-        padding: 18px;
-    }
-    label {
-        font-size: 15px;
-        margin-top: 15px;
-    }
-    textarea {
-        height: 110px;
-        font-size: 15px;
-        padding: 12px;
-    }
-    button {
-        width: 100%;
-        margin-right: 0;
-        margin-bottom: 12px;
-        font-size: 16px;
-        padding: 14px;
-    }
-    #result {
-        padding: 18px;
-        font-size: 15px;
-    }
+    body { padding: 15px; }
+    h1 { font-size: 24px; }
+    textarea { height: 100px; }
+    button { width: 100%; margin-bottom: 10px; }
 }
 </style>
 </head>
@@ -150,34 +152,35 @@ button:nth-of-type(2):hover {
 <form id="form">
 
     <label>① 解決したい課題：</label>
-    <textarea id="problem" placeholder="例）新型設備を導入し、対応可能な範囲を広げたい"></textarea>
+    <textarea id="problem"></textarea>
 
     <label>②-1 事業を始めてからのいきさつ：</label>
-    <textarea id="history" placeholder="例）創業の背景、事業開始の理由など"></textarea>
+    <textarea id="history"></textarea>
 
     <label>②-2 所在地（立地条件や商圏など）：</label>
-    <textarea id="location" placeholder="例）主要道路沿いで交通量が多い、商圏人口○万人など"></textarea>
+    <textarea id="location"></textarea>
 
     <label>②-3 取り扱い商品・サービス：</label>
-    <textarea id="products" placeholder="例）売れ筋商品、サービスの特徴、強みなど"></textarea>
+    <textarea id="products"></textarea>
 
     <label>②-4 強みと経営課題：</label>
-    <textarea id="strengths" placeholder="例）強み：○○、課題：○○。補助事業で改善したい点など"></textarea>
+    <textarea id="strengths"></textarea>
 
     <label>③ 補助金申請をしたいもの（具体的に）：</label>
-    <textarea id="apply" placeholder="例）最新型の冷凍設備を導入し、取扱商品の幅を広げたい"></textarea>
+    <textarea id="apply"></textarea>
 
-    <button type="button" onclick="generatePrompt()">作成</button>
-    <button type="button" onclick="stop()">停止</button>
+    <button type="button" class="generate" onclick="generatePrompt()">作成</button>
+    <button type="button" class="stop" onclick="stop()">停止</button>
 </form>
 
+<div id="message"></div>
 <div id="result"></div>
 
 <script>
 function generatePrompt() {
 
-    // クリック直後に Copilot を開く（ポップアップブロック対策）
-    window.open("https://copilot.microsoft.com", "_blank");
+    // Copilot をバックグラウンドで開く（画面遷移しない）
+    window.open("https://copilot.microsoft.com", "_blank", "noopener");
 
     const problem = document.getElementById("problem").value;
     const history = document.getElementById("history").value;
@@ -246,7 +249,9 @@ ${apply}
     document.getElementById("result").textContent = prompt;
 
     navigator.clipboard.writeText(prompt).then(() => {
-        alert("プロンプトをコピーしました。開いた Copilot に貼り付けてください。");
+        const msg = document.getElementById("message");
+        msg.style.display = "block";
+        msg.textContent = "プロンプトをコピーしました！開いた Copilot のタブに移動し、貼り付けてください。";
     });
 }
 
