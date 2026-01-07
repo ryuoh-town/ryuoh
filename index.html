@@ -3,42 +3,166 @@
 <head>
 <meta charset="UTF-8">
 <title>補助金サポート Canvas</title>
+
+<!-- CSS -->
 <style>
 body {
-    font-family: sans-serif;
+    font-family: "Helvetica", "Arial", sans-serif;
     max-width: 900px;
     margin: auto;
-    padding: 20px;
+    padding: 30px;
+    background: #f0f2f5;
+    color: #333;
 }
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 28px;
+    color: #222;
+}
+
+p {
+    text-align: center;
+    margin-bottom: 40px;
+    color: #555;
+}
+
+form {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-bottom: 30px;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 8px;
+    margin-top: 20px;
+    color: #333;
+}
+
 textarea {
     width: 100%;
     height: 120px;
-    margin-bottom: 20px;
-}
-button {
-    padding: 10px 20px;
+    padding: 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    resize: vertical;
     font-size: 16px;
-    margin-right: 10px;
+    background: #fafafa;
+    transition: border-color 0.2s, background 0.2s;
 }
+
+textarea:focus {
+    border-color: #4a90e2;
+    background: #fff;
+    outline: none;
+}
+
+button {
+    padding: 14px 24px;
+    font-size: 17px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+button:nth-of-type(1) {
+    background: #4a90e2;
+    color: white;
+    margin-right: 10px;
+    transition: background 0.2s;
+}
+
+button:nth-of-type(1):hover {
+    background: #357ab8;
+}
+
+button:nth-of-type(2) {
+    background: #ccc;
+    color: #333;
+    transition: background 0.2s;
+}
+
+button:nth-of-type(2):hover {
+    background: #b5b5b5;
+}
+
 #result {
-    margin-top: 30px;
-    padding: 20px;
-    background: #f5f5f5;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     white-space: pre-wrap;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+/* スマホ最適化 */
+@media (max-width: 600px) {
+    body {
+        padding: 15px;
+    }
+    h1 {
+        font-size: 22px;
+        margin-bottom: 20px;
+    }
+    p {
+        font-size: 14px;
+        margin-bottom: 25px;
+    }
+    form {
+        padding: 18px;
+    }
+    label {
+        font-size: 15px;
+        margin-top: 15px;
+    }
+    textarea {
+        height: 110px;
+        font-size: 15px;
+        padding: 12px;
+    }
+    button {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 12px;
+        font-size: 16px;
+        padding: 14px;
+    }
+    #result {
+        padding: 18px;
+        font-size: 15px;
+    }
 }
 </style>
 </head>
+
 <body>
 
 <h1>補助金サポート Canvas</h1>
 <p>必要事項を入力すると、AI が補助金申請に必要な文章を生成します。</p>
 
 <form id="form">
+
     <label>① 解決したい課題：</label>
     <textarea id="problem" placeholder="例）新型設備を導入し、対応可能な範囲を広げたい"></textarea>
 
-    <label>② あなたの事業について：</label>
-    <textarea id="business" placeholder="例）創業●●年、地域密着型。主要顧客は～～で、●件の取引をいただいているなど"></textarea>
+    <label>②-1 事業を始めてからのいきさつ：</label>
+    <textarea id="history" placeholder="例）創業の背景、事業開始の理由など"></textarea>
+
+    <label>②-2 所在地（立地条件や商圏など）：</label>
+    <textarea id="location" placeholder="例）主要道路沿いで交通量が多い、商圏人口○万人など"></textarea>
+
+    <label>②-3 取り扱い商品・サービス：</label>
+    <textarea id="products" placeholder="例）売れ筋商品、サービスの特徴、強みなど"></textarea>
+
+    <label>②-4 強みと経営課題：</label>
+    <textarea id="strengths" placeholder="例）強み：○○、課題：○○。補助事業で改善したい点など"></textarea>
 
     <label>③ 補助金申請をしたいもの（具体的に）：</label>
     <textarea id="apply" placeholder="例）最新型の冷凍設備を導入し、取扱商品の幅を広げたい"></textarea>
@@ -51,44 +175,83 @@ button {
 
 <script>
 function generatePrompt() {
-    // ① クリック直後に先に Copilot を開く（これが重要）
-    const copilotWindow = window.open("https://copilot.microsoft.com", "_blank");
+
+    // クリック直後に Copilot を開く（ポップアップブロック対策）
+    window.open("https://copilot.microsoft.com", "_blank");
 
     const problem = document.getElementById("problem").value;
-    const business = document.getElementById("business").value;
+    const history = document.getElementById("history").value;
+    const location = document.getElementById("location").value;
+    const products = document.getElementById("products").value;
+    const strengths = document.getElementById("strengths").value;
     const apply = document.getElementById("apply").value;
 
     const prompt = `
 あなたは補助金申請の専門家です。
-以下の3つの情報をもとに、補助金申請に必要な要素を体系的に整理し、文章を生成してください。
+以下の情報をもとに、補助金申請に必要な事業計画の文章を体系的に生成してください。
+
+【事業者が入力した内容】
 
 ① 解決したい課題：
 ${problem}
 
 ② あなたの事業について：
-${business}
+・事業を始めてからのいきさつ：
+${history}
+
+・所在地（立地条件や商圏など）：
+${location}
+
+・取り扱い商品・サービス：
+${products}
+
+・強みと経営課題：
+${strengths}
 
 ③ 補助金申請をしたいもの（具体的に）：
 ${apply}
 
 ---
 
-■ 解決したい課題の整理
-■ 実施内容（タイトル、導入説明、独自性、効果、解決できる内容）
-■ 顧客の悩み
-■ 顧客の利得
-■ コスト構造・必要なリソース
-■ 収益の流れ・売上収支の見通し
-■ 行動計画
+# 生成してほしい内容
+
+1. 市場の動向 
+入力された所在地・商圏・取り扱い商品をもとに、地域特性や業界動向を推測し、事業に関連する市場動向を文章化してください。
+2. 顧客ニーズ 
+入力された情報から、ターゲット層・購買傾向・顧客の行動特性を推測し、顧客ニーズを整理してください。
+3. 自社の強み  
+入力された「強み」や「取り扱い商品」から、競合との差別化ポイントを文章化してください。
+4. 自社の弱み 
+補助金申請をしたい内容に関連づけて、現状の課題や対応できていない点を整理し、導入により解決できる方向性を提示してください。
+5. 経営方針・目標 
+入力された内容を踏まえ、今後の経営方針と数値を含む目標を設定してください。
+6. 今後の事業展開  
+補助金申請をしたいものを導入することで、売上拡大・商圏拡大・顧客満足度向上など、どのように事業を展開していくかを記述してください。
+7. 補助事業で行う事業名（30文字以内）  
+補助金申請内容を端的に表すタイトルを30文字以内で生成してください。
+8. 事業の概要（30文字以内） 
+補助金申請をしたい内容を30文字以内で要約してください。
+9. 背景・目的  
+補助金申請を行う理由を、経営課題・市場動向・今後の展開と関連づけて説明してください。
+10. 具体的な取組（30文字以内）  
+補助金申請する内容を30文字以内で説明してください。
+11. 具体的な取組内容の詳細（数値を含めて）  
+申請内容を活用した際、どのように売上に繋がるか、具体的な数値（例：売上○％増、客数○人増など）を含めて説明してください。
+12. 取組の効果
+業務効率化や生産性向上につながる場合、その効果を定量・定性の両面から説明してください。
+13. 効果の試算（数値を含めて、結びの言葉も生成）
+売上増加・業務効率化・時間削減などを、具体的な金額・時間・割合などの数値を用いて試算し、最後に結びの言葉を生成してください。
 `;
 
-    // ② プロンプトを画面に表示
     document.getElementById("result").textContent = prompt;
 
-    // ③ プロンプトをコピー
     navigator.clipboard.writeText(prompt).then(() => {
         alert("プロンプトをコピーしました。開いた Copilot に貼り付けてください。");
     });
+}
+
+function stop() {
+    document.getElementById("result").textContent = "生成を停止しました。";
 }
 </script>
 
