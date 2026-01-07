@@ -51,6 +51,9 @@ button {
 
 <script>
 function generatePrompt() {
+    // ① クリック直後に先に Copilot を開く（これが重要）
+    const copilotWindow = window.open("https://copilot.microsoft.com", "_blank");
+
     const problem = document.getElementById("problem").value;
     const business = document.getElementById("business").value;
     const apply = document.getElementById("apply").value;
@@ -58,8 +61,6 @@ function generatePrompt() {
     const prompt = `
 あなたは補助金申請の専門家です。
 以下の3つの情報をもとに、補助金申請に必要な要素を体系的に整理し、文章を生成してください。
-
-【事業者が入力した内容】
 
 ① 解決したい課題：
 ${problem}
@@ -72,27 +73,22 @@ ${apply}
 
 ---
 
-# 生成してほしい内容
-
-■ 解決したい課題の整理  
-■ 実施内容（タイトル、導入説明、独自性、効果、解決できる内容）  
-■ 顧客の悩み  
-■ 顧客の利得  
-■ コスト構造・必要なリソース  
-■ 収益の流れ・売上収支の見通し  
+■ 解決したい課題の整理
+■ 実施内容（タイトル、導入説明、独自性、効果、解決できる内容）
+■ 顧客の悩み
+■ 顧客の利得
+■ コスト構造・必要なリソース
+■ 収益の流れ・売上収支の見通し
 ■ 行動計画
 `;
 
-    // ① プロンプトを画面に表示
+    // ② プロンプトを画面に表示
     document.getElementById("result").textContent = prompt;
 
-    // ② プロンプトをクリップボードにコピー
+    // ③ プロンプトをコピー
     navigator.clipboard.writeText(prompt).then(() => {
-        alert("プロンプトをコピーしました。Copilot が開きますので、貼り付けてください。");
+        alert("プロンプトをコピーしました。開いた Copilot に貼り付けてください。");
     });
-
-    // ③ Copilot を新しいタブで開く
-    window.open("https://copilot.microsoft.com", "_blank");
 }
 </script>
 
