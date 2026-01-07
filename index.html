@@ -1,90 +1,130 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Progate</title>
-  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-  <link rel="stylesheet" type="text/css" href="stylesheet.css">
+<meta charset="UTF-8">
+<title>補助金サポート Canvas</title>
+<style>
+body {
+    font-family: sans-serif;
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+}
+textarea {
+    width: 100%;
+    height: 120px;
+    margin-bottom: 20px;
+}
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin-right: 10px;
+}
+#result {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f5f5f5;
+    white-space: pre-wrap;
+}
+</style>
 </head>
 <body>
-  <header>
-    <div class="container">
-      <div class="header-left">
-        <img class="logo" src="https://prog-8.com/images/html/advanced/main_logo.png">
-      </div>
-      <span class="fa fa-bars menu-icon"></span>
-      <div class="header-right">
-        <a href="#">レッスン</a>
-        <a href="#">新規登録</a>
-        <a href="#" class="login">ログイン</a>
-      </div>
-    </div>
-  </header>
-  <div class="top-wrapper">
-    <div class="container">
-      <h1>LEARN TO CODE.<br>LEARN TO BE CREATIVE.</h1>
-      <p>Progateはオンラインプログラミング学習サービスです。<br>初心者にもやさしいスライドとレッスンで、ウェブサービスを作りながらプログラミングを学んでいきましょう。</p>
-      <div class="btn-wrapper">
-        <a href="#" class="btn signup">新規登録はこちら</a>
-        <p>or</p>
-        <a href="#" class="btn facebook"><span class="fa fa-facebook"></span>Facebookで登録</a>
-        <a href="#" class="btn twitter"><span class="fa fa-twitter"></span>Twitterで登録</a>
-      </div>
-    </div>
-  </div>
-  <div class="lesson-wrapper">
-    <div class="container">
-      <div class="heading">
-        <h2>Learn Where to Get Started!</h2>
-      </div>
-      <div class="lessons">
-        <div class="lesson">
-          <div class="lesson-icon">
-            <img src="https://prog-8.com/images/html/advanced/html.png">
-            <p>HTML & CSS</p>
-          </div>
-          <p class="text-contents">ウェブページの作成に使用される言語です。HTMLとCSSを組み合わせることで、静的なページを作り上げることができます。</p>
-        </div>
-        <div class="lesson">
-          <div class="lesson-icon">
-            <img src="https://prog-8.com/images/html/advanced/jQuery.png">
-            <p>jQuery</p>
-          </div>
-          <p class="text-contents">素敵な動きを手軽に実装できるJavaScriptライブラリです。 アニメーション効果をつけたり、Ajax（エイジャックス）を使って外部ファイルを読み込んだりと色々なことができます。</p>
-        </div>
-        <div class="lesson">
-          <div class="lesson-icon">
-            <img src="https://prog-8.com/images/html/advanced/ruby.png">
-            <p>Ruby</p>
-          </div>
-          <p class="text-contents">オープンソースの動的なプログラミング言語で、 シンプルさと高い生産性を備えています。大きなWebアプリケーションから小さな日用ツールまで、さまざまなソフトウェアを作ることができます。</p>
-        </div>
-        <div class="lesson">
-          <div class="lesson-icon">
-            <img src="https://prog-8.com/images/html/advanced/php.png">
-            <p>PHP</p>
-          </div>
-          <p class="text-contents">HTMLだけではページの内容を変えることはできません。PHPはHTMLにプログラムを埋め込み、それを可能にします。</p>
-        </div>
-      </div>
-      <div class="clear"></div>
-    </div>
-  </div>
-  <div class="message-wrapper">
-    <div class="container">
-      <div class="heading">
-        <h2>さぁ、あなたもProgateでプログラミングを学んでみませんか?</h2>
-        <h3>Let's learn to code, learn to be creative!</h3>
-      </div>
-      <span class="btn message">さっそく開発する</span>
-    </div>
-  </div>
-  <footer>
-    <div class="container">
-      <img src="https://prog-8.com/images/html/advanced/footer_logo.png">
-      <p>Learn to Code, Learn to be Creative.</p>
-    </div>
-  </footer>
+
+<h1>補助金サポート Canvas</h1>
+<p>必要事項を入力すると、AI が補助金申請に必要な文章を生成します。</p>
+
+<form id="form">
+    <label>① 解決したい課題：</label>
+    <textarea id="problem" placeholder="例）新型設備を導入し、対応可能な範囲を広げたい"></textarea>
+
+    <label>② あなたの事業について：</label>
+    <textarea id="business" placeholder="例）創業●●年、地域密着型。主要顧客は～～で、●件の取引をいただいているなど"></textarea>
+
+    <label>③ 補助金申請をしたいもの（具体的に）：</label>
+    <textarea id="apply" placeholder="例）最新型の冷凍設備を導入し、取扱商品の幅を広げたい"></textarea>
+
+    <button type="button" onclick="generatePrompt()">作成</button>
+    <button type="button" onclick="stop()">停止</button>
+</form>
+
+<div id="result"></div>
+
+<script>
+function generatePrompt() {
+    const problem = document.getElementById("problem").value;
+    const business = document.getElementById("business").value;
+    const apply = document.getElementById("apply").value;
+
+    const prompt = `
+あなたは補助金申請の専門家です。
+以下の3つの情報をもとに、補助金申請に必要な要素を体系的に整理し、文章を生成してください。
+
+【事業者が入力した内容】
+
+① 解決したい課題：
+${problem}
+（例：新型設備を導入し、対応可能な範囲を広げたい）
+
+② あなたの事業について：
+${business}
+（例：創業●●年、地域密着型。主要顧客は～～で、●件の取引をいただいているなど）
+
+③ 補助金申請をしたいもの（具体的に）：
+${apply}
+（例：最新型の冷凍設備を導入し、取扱商品の幅を広げたい）
+
+---
+
+# 生成してほしい内容
+
+## 1. 解決したい課題の整理
+以下の3点を踏まえて、事業者の課題をわかりやすく文章化してください。
+- 問いの整理（何が本質的な課題か）
+- 事業者の背景（現状・状況）
+- 市場ニーズ（顧客や地域の需要）
+
+## 2. 実施内容の作成
+以下の内容を生成してください。
+- 本事業のタイトル（短く端的に）
+- 事業の導入説明（なぜ必要か、どんな取り組みか）
+- 独自性（他社との差別化ポイント）
+- 導入により得られる効果（定量・定性）
+- 解決できる内容（課題とのつながり）
+
+## 3. 必要に応じて生成する追加要素
+- 顧客の悩み
+- 顧客の利得（メリット）
+- コスト構造、必要なリソース
+- 収益の流れ、売上収支の見通し
+- アイデアを実現するための行動計画
+
+---
+
+# 出力形式
+【解決したい課題の整理】
+（文章）
+
+【実施内容】
+■ タイトル  
+■ 導入説明  
+■ 独自性  
+■ 効果  
+■ 解決できる内容  
+
+【顧客の悩み】（必要に応じて）
+【顧客の利得】（必要に応じて）
+【コスト構造・必要なリソース】（必要に応じて）
+【収益の流れ・売上収支の見通し】（必要に応じて）
+【行動計画】（必要に応じて）
+`;
+
+    document.getElementById("result").textContent = prompt;
+}
+
+function stop() {
+    document.getElementById("result").textContent = "生成を停止しました。";
+}
+</script>
+
 </body>
 </html>
