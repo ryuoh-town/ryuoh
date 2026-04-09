@@ -1,153 +1,255 @@
-/* 全体レイアウト */
+/* =============================== */
+/* 🌐 全体レイアウト（モダンUI） */
+/* =============================== */
 body {
-    font-family: "Helvetica", "Arial", sans-serif;
+    font-family: "Helvetica Neue", "Arial", sans-serif;
     max-width: 900px;
     margin: auto;
-    padding: 30px;
-    background: #f0f2f5;
-    color: #333;
+    padding: 40px 24px;
+    background: #eef1f5;
+    color: #2c3e50;
+    line-height: 1.6;
 }
 
-/* タイトル */
+/* =============================== */
+/* 🏷 タイトル・説明文 */
+/* =============================== */
 h1 {
     text-align: center;
-    margin-bottom: 30px;
-    font-size: 28px;
-    color: #222;
+    margin-bottom: 18px;
+    font-size: 32px;
+    font-weight: 700;
+    color: #1f2d3d;
+    letter-spacing: 0.5px;
 }
 
-/* 説明文 */
 p {
     text-align: center;
-    margin-bottom: 40px;
-    color: #555;
+    margin-bottom: 36px;
+    color: #5f6c7b;
+    font-size: 15px;
 }
 
-/* 入力フォームのカード */
+/* =============================== */
+/* 📦 入力フォームカード */
+/* =============================== */
 form {
     background: #ffffff;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    margin-bottom: 30px;
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+    margin-bottom: 32px;
+    border: 1px solid #e5e9f2;
 }
 
-/* ラベル */
+/* =============================== */
+/* 🪜 ステップ見出し */
+/* =============================== */
+.step-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 40px;
+    margin-bottom: 12px;
+    color: #1f2d3d;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.step-title i {
+    color: #4a90e2;
+    font-size: 22px;
+}
+
+/* =============================== */
+/* 📌 アコーディオン（折りたたみ） */
+/* =============================== */
+.accordion {
+    background: #f7f9fc;
+    border: 1px solid #dce3ec;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    padding: 14px 18px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: 0.25s;
+}
+
+.accordion:hover {
+    background: #eef3f8;
+}
+
+.accordion i {
+    transition: transform 0.25s;
+}
+
+.accordion.active i {
+    transform: rotate(90deg);
+}
+
+/* アコーディオンの中身 */
+.panel {
+    display: none;
+    padding: 10px 4px 0 4px;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* =============================== */
+/* 📝 ラベル */
+/* =============================== */
 label {
-    font-weight: bold;
+    font-weight: 600;
     display: block;
-    margin-bottom: 8px;
-    margin-top: 20px;
-    color: #333;
+    margin-bottom: 6px;
+    margin-top: 22px;
+    color: #34495e;
+    font-size: 15px;
 }
 
-/* テキストエリア */
+/* =============================== */
+/* 🧩 例文ボタン */
+/* =============================== */
+button.example {
+    background: #7f8c8d;
+    color: #fff;
+    padding: 6px 12px;
+    font-size: 13px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 8px;
+    transition: 0.2s;
+}
+
+button.example:hover {
+    background: #626e70;
+}
+
+/* =============================== */
+/* ✏ テキストエリア */
+/* =============================== */
 textarea {
     width: 100%;
-    height: 140px;
+    min-height: 130px;
     padding: 14px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
+    border: 1px solid #d0d7e2;
+    border-radius: 10px;
     resize: vertical;
-    font-size: 16px;
-    background: #fafafa;
-    transition: border-color 0.2s, background 0.2s;
+    font-size: 15px;
+    background: #fafbfc;
+    transition: 0.25s;
 }
 
-/* テキストエリアにフォーカスしたとき */
 textarea:focus {
     border-color: #4a90e2;
     background: #fff;
     outline: none;
+    box-shadow: 0 0 0 3px rgba(74,144,226,0.15);
 }
 
-/* ボタン */
-button {
-    padding: 14px 24px;
-    font-size: 17px;
-    border-radius: 8px;
+/* =============================== */
+/* 🔘 ボタン（作成・停止） */
+/* =============================== */
+button.generate,
+button.stop {
+    padding: 14px 26px;
+    font-size: 16px;
+    border-radius: 10px;
     border: none;
     cursor: pointer;
-    margin-top: 20px;
+    margin-top: 26px;
+    transition: 0.25s;
+    font-weight: 600;
 }
 
 /* 作成ボタン */
-button:nth-of-type(1) {
+button.generate {
     background: #4a90e2;
-    color: white;
-    margin-right: 10px;
-    transition: background 0.2s;
+    color: #fff;
+    margin-right: 12px;
+    box-shadow: 0 4px 12px rgba(74,144,226,0.3);
 }
-
-button:nth-of-type(1):hover {
+button.generate:hover {
     background: #357ab8;
+    box-shadow: 0 6px 16px rgba(74,144,226,0.4);
 }
 
 /* 停止ボタン */
-button:nth-of-type(2) {
-    background: #ccc;
+button.stop {
+    background: #d0d3d4;
     color: #333;
-    transition: background 0.2s;
+}
+button.stop:hover {
+    background: #b5b8b9;
 }
 
-button:nth-of-type(2):hover {
-    background: #b5b5b5;
-}
-
-/* 結果表示エリア */
+/* =============================== */
+/* 📄 結果表示エリア */
+/* =============================== */
 #result {
     background: #ffffff;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    padding: 28px;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
     white-space: pre-wrap;
-    font-size: 16px;
-    line-height: 1.7;
+    font-size: 15px;
+    line-height: 1.8;
+    border: 1px solid #e5e9f2;
 }
 
-/* ----------------------------- */
-/* 📱 スマホ最適化（強化版） */
-/* ----------------------------- */
+/* =============================== */
+/* 📱 スマホ最適化 */
+/* =============================== */
 @media (max-width: 600px) {
 
     body {
-        padding: 15px;
+        padding: 20px;
     }
 
     h1 {
-        font-size: 22px;
-        margin-bottom: 20px;
+        font-size: 26px;
+        margin-bottom: 14px;
     }
 
     p {
         font-size: 14px;
-        margin-bottom: 25px;
+        margin-bottom: 24px;
     }
 
     form {
-        padding: 18px;
+        padding: 22px;
     }
 
     label {
-        font-size: 15px;
-        margin-top: 15px;
+        font-size: 14px;
+        margin-top: 16px;
     }
 
     textarea {
-        height: 110px;
-        font-size: 15px;
+        min-height: 110px;
+        font-size: 14px;
         padding: 12px;
     }
 
-    /* ボタンを縦並びにして押しやすくする */
-    button {
+    button.generate,
+    button.stop {
         width: 100%;
         margin-right: 0;
         margin-bottom: 12px;
-        font-size: 16px;
+        font-size: 15px;
         padding: 14px;
     }
-
+}
     #result {
         padding: 18px;
         font-size: 15px;
