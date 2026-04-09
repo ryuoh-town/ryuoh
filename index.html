@@ -68,18 +68,29 @@ textarea:focus {
 
 /* ボタン */
 button {
-    padding: 12px 22px;
-    font-size: 15px;
-    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 13px;
+    border-radius: 8px;
     border: none;
     cursor: pointer;
-    margin-top: 18px;
+    margin-top: 6px;
+    margin-bottom: 10px;
     transition: 0.2s;
+}
+button.example {
+    background: #6c7a89;
+    color: #fff;
+    margin-left: 6px;
+}
+button.example:hover {
+    background: #556270;
 }
 button.generate {
     background: #4a90e2;
     color: #fff;
     margin-right: 8px;
+    padding: 12px 22px;
+    font-size: 15px;
 }
 button.generate:hover {
     background: #357ab8;
@@ -87,6 +98,8 @@ button.generate:hover {
 button.stop {
     background: #ccc;
     color: #333;
+    padding: 12px 22px;
+    font-size: 15px;
 }
 button.stop:hover {
     background: #b5b5b5;
@@ -133,22 +146,35 @@ button.stop:hover {
 
 <form id="form">
 
+    <label>補助金の種類：</label>
+    <select id="type">
+        <option value="jizoku">小規模事業者持続化補助金</option>
+        <option value="mono">ものづくり補助金（準備中）</option>
+        <option value="saikouchiku">事業再構築補助金（準備中）</option>
+    </select>
+
     <label>① 解決したい課題：</label>
+    <button type="button" class="example" onclick="fillExample('problem')">例文を挿入</button>
     <textarea id="problem" placeholder="例）新型設備を導入し、対応可能な範囲を広げたい"></textarea>
 
     <label>②-1 事業を始めてからのいきさつ：</label>
+    <button type="button" class="example" onclick="fillExample('history')">例文を挿入</button>
     <textarea id="history" placeholder="例）創業の背景、事業開始の理由、これまでの経緯など"></textarea>
 
     <label>②-2 所在地（立地条件や商圏など）：</label>
+    <button type="button" class="example" onclick="fillExample('location')">例文を挿入</button>
     <textarea id="location" placeholder="例）国道沿いで車の通行量が多い／駅から徒歩5分／商圏人口○万人 など"></textarea>
 
     <label>②-3 取り扱い商品・サービス（売れ筋やおすすめポイントなど）：</label>
+    <button type="button" class="example" onclick="fillExample('products')">例文を挿入</button>
     <textarea id="products" placeholder="例）主力商品、売れ筋商品、サービスの特徴、他店との違いなど"></textarea>
 
     <label>②-4 強みと経営課題（補助事業をすることにからめて）：</label>
+    <button type="button" class="example" onclick="fillExample('strengths')">例文を挿入</button>
     <textarea id="strengths" placeholder="例）強み：○○、課題：○○。補助事業でどのように改善したいか など"></textarea>
 
     <label>③ 補助金申請をしたいもの（具体的に）：</label>
+    <button type="button" class="example" onclick="fillExample('apply')">例文を挿入</button>
     <textarea id="apply" placeholder="例）最新型の冷凍設備を導入し、取扱商品の幅を広げたい"></textarea>
 
     <button type="button" class="generate" onclick="generatePrompt()">作成</button>
@@ -159,19 +185,27 @@ button.stop:hover {
 <div id="result"></div>
 
 <script>
-function generatePrompt() {
-    const problem   = document.getElementById("problem").value;
-    const history   = document.getElementById("history").value;
-    const location  = document.getElementById("location").value;
-    const products  = document.getElementById("products").value;
-    const strengths = document.getElementById("strengths").value;
-    const apply     = document.getElementById("apply").value;
 
-    const prompt = `あなたは補助金申請の専門家です。
-以下の情報をもとに、補助金申請に必要な事業計画の文章を体系的に生成してください。
+/* 例文挿入 */
+function fillExample(field) {
+    const examples = {
+        problem: "既存設備の老朽化により生産効率が低下しており、新規顧客への対応が難しくなっている。",
+        history: "創業は2010年。地域密着型のサービスとしてスタートし、口コミを中心に顧客を増やしてきた。",
+        location: "国道沿いの立地で車の通行量が多く、商圏人口は約5万人。近隣に競合店が2店舗ある。",
+        products: "主力商品は○○で、リピート率が高い。地域のニーズに合わせたサービス提供を行っている。",
+        strengths: "強みは迅速な対応と顧客との信頼関係。課題は設備の老朽化による生産性の低下。",
+        apply: "最新型の○○設備を導入し、作業効率を向上させることで新規顧客の獲得を目指す。"
+    };
+    document.getElementById(field).value = examples[field];
+}
 
-【事業者が入力した内容】
+/* 持続化補助金テンプレート */
+function getJizokuTemplate(problem, history, location, products, strengths, apply) {
+return `
+あなたは補助金申請の専門家であり、補助金審査員の視点を理解した中小企業診断士です。
+以下の素材をもとに、小規模事業者持続化補助金の審査項目に完全準拠した事業計画書文章を生成してください。
 
+【事業者が入力した素材】
 ① 解決したい課題：
 ${problem}
 
@@ -193,46 +227,64 @@ ${apply}
 
 ---
 
-# 生成してほしい内容
+# 審査項目に基づく生成指示（重要）
 
-1. 市場の動向
-入力された所在地・商圏・取り扱い商品をもとに、地域特性や業界動向を推測し、事業に関連する市場動向を文章化してください。
+【1. 自社の経営状況分析の妥当性】
+・事業者が入力した素材をもとに、自社の経営状況を適切に把握していること  
+・自社の製品・サービス、強み・弱みを論理的に整理すること  
 
-2. 顧客ニーズ
-入力された情報から、ターゲット層・購買傾向・顧客の行動特性を推測し、顧客ニーズを整理してください。
+【2. 経営方針・目標と今後のプランの適切性】
+・自社の強み・弱みを踏まえた経営方針・目標を設定すること  
+・対象とする市場（商圏）や顧客ニーズを踏まえた今後のプランを提示すること  
 
-3. 自社の強み
-入力された「強み」や「取り扱い商品」から、競合との差別化ポイントを文章化してください。
+【3. 補助事業計画の有効性】
+・補助事業の内容が具体的で、実現可能性が高いこと  
+・販路開拓のために必要かつ有効である理由を明確に示すこと  
+・補助事業計画には、技術やノウハウ・アイデアに基づき、ターゲットとする顧客や市場にとって、新たな価値を生み出す商品、サービス、またはそれらの提供方法を有する取組等がみられるか 
+・補助事業計画には、デジタル技術を有効的に活用する取り組みが見られること（推奨）
 
-4. 自社の弱み
-補助金申請をしたい内容に関連づけて、現状の課題や対応できていない点を整理し、導入により解決できる方向性を提示してください。
+文章は「結論 → 理由 → 補足」の順で構成し、  
+見出し・箇条書きを適切に用いて、審査員が読みやすい構成にしてください。
 
-5. 経営方針・目標
-入力された内容を踏まえ、今後の経営方針と数値を含む目標を設定してください。
+また、売上増加率・客数増加・作業時間削減など、  
+必ず数値を含めて記述してください。
 
-6. 今後の事業展開
-補助金申請をしたいものを導入することで、売上拡大・商圏拡大・顧客満足度向上など、どのように事業を展開していくかを記述してください。
+---
 
-7. 補助事業で行う事業名（30文字以内）
-補助金申請内容を端的に表すタイトルを30文字以内で生成してください。
+# 生成してほしい内容（12要件）
 
-8. 事業の概要（30文字以内）
-補助金申請をしたい内容を30文字以内で要約してください。
+1. 市場の動向  
+2. 顧客ニーズ  
+3. 自社の強み  
+4. 自社の弱み  
+5. 経営方針・目標（数値を含む）  
+6. 今後の事業展開  
+7. 補助事業で行う事業名（30文字以内）  
+8. 事業の概要（30文字以内）  
+9. 背景・目的  
+10. 具体的な取組（30文字以内）  
+11. 具体的な取組内容の詳細（数値を含めて）  
+12. 取組の効果・効果の試算（数値を含む、結びの言葉も生成）
+`;
+}
 
-9. 背景・目的
-補助金申請を行う理由を、経営課題・市場動向・今後の展開と関連づけて説明してください。
+/* プロンプト生成 */
+function generatePrompt() {
+    const problem   = document.getElementById("problem").value;
+    const history   = document.getElementById("history").value;
+    const location  = document.getElementById("location").value;
+    const products  = document.getElementById("products").value;
+    const strengths = document.getElementById("strengths").value;
+    const apply     = document.getElementById("apply").value;
+    const type      = document.getElementById("type").value;
 
-10. 具体的な取組（30文字以内）
-補助金申請する内容を30文字以内で説明してください。
+    let prompt = "";
 
-11. 具体的な取組内容の詳細（数値を含めて）
-申請内容を活用した際、どのように売上に繋がるか、具体的な数値（例：売上○％増、客数○人増など）を含めて説明してください。
-
-12. 取組の効果
-業務効率化や生産性向上につながる場合、その効果を定量・定性の両面から説明してください。
-
-13. 効果の試算（数値を含めて、結びの言葉も生成）
-売上増加・業務効率化・時間削減などを、具体的な金額・時間・割合などの数値を用いて試算し、最後に結びの言葉を生成してください。`;
+    if (type === "jizoku") {
+        prompt = getJizokuTemplate(problem, history, location, products, strengths, apply);
+    } else {
+        prompt = "この補助金テンプレートは現在準備中です。";
+    }
 
     document.getElementById("result").textContent = prompt;
 
@@ -256,6 +308,7 @@ function stopGenerate() {
     document.getElementById("result").textContent = "生成を停止しました。";
     document.getElementById("message").style.display = "none";
 }
+
 </script>
 
 </body>
