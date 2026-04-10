@@ -1,14 +1,15 @@
 /* =============================== */
-/* 🌐 全体レイアウト（モダンUI） */
+/* 🌐 全体レイアウト（ハイエンドUI） */
 /* =============================== */
 body {
-    font-family: "Helvetica Neue", "Arial", sans-serif;
-    max-width: 900px;
+    font-family: "Inter", "Helvetica Neue", "Arial", sans-serif;
+    max-width: 880px;
     margin: auto;
-    padding: 40px 24px;
-    background: #eef1f5;
+    padding: 48px 28px;
+    background: #f3f5f8;
     color: #2c3e50;
-    line-height: 1.6;
+    line-height: 1.7;
+    letter-spacing: 0.2px;
 }
 
 /* =============================== */
@@ -16,18 +17,17 @@ body {
 /* =============================== */
 h1 {
     text-align: center;
-    margin-bottom: 18px;
-    font-size: 32px;
+    margin-bottom: 20px;
+    font-size: 34px;
     font-weight: 700;
-    color: #1f2d3d;
-    letter-spacing: 0.5px;
+    color: #1d2735;
 }
 
 p {
     text-align: center;
-    margin-bottom: 36px;
-    color: #5f6c7b;
-    font-size: 15px;
+    margin-bottom: 40px;
+    color: #6b7785;
+    font-size: 15.5px;
 }
 
 /* =============================== */
@@ -35,11 +35,15 @@ p {
 /* =============================== */
 form {
     background: #ffffff;
-    padding: 32px;
-    border-radius: 16px;
-    box-shadow: 0 10px 28px rgba(0,0,0,0.08);
-    margin-bottom: 32px;
-    border: 1px solid #e5e9f2;
+    padding: 36px;
+    border-radius: 18px;
+    border: 1px solid #e6e9ef;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.06);
+    transition: box-shadow 0.3s ease;
+}
+
+form:hover {
+    box-shadow: 0 16px 40px rgba(0,0,0,0.08);
 }
 
 /* =============================== */
@@ -48,8 +52,8 @@ form {
 .step-title {
     font-size: 18px;
     font-weight: 700;
-    margin-top: 40px;
-    margin-bottom: 12px;
+    margin-top: 42px;
+    margin-bottom: 14px;
     color: #1f2d3d;
     display: flex;
     align-items: center;
@@ -62,14 +66,14 @@ form {
 }
 
 /* =============================== */
-/* 📌 アコーディオン（折りたたみ） */
+/* 📌 アコーディオン */
 /* =============================== */
 .accordion {
-    background: #f7f9fc;
-    border: 1px solid #dce3ec;
-    border-radius: 10px;
-    margin-bottom: 16px;
-    padding: 14px 18px;
+    background: #f8fafc;
+    border: 1px solid #d9e1ec;
+    border-radius: 12px;
+    margin-bottom: 14px;
+    padding: 16px 20px;
     cursor: pointer;
     font-size: 16px;
     font-weight: 600;
@@ -77,11 +81,12 @@ form {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    transition: 0.25s;
+    transition: background 0.25s, border-color 0.25s;
 }
 
 .accordion:hover {
     background: #eef3f8;
+    border-color: #c8d4e3;
 }
 
 .accordion i {
@@ -92,16 +97,16 @@ form {
     transform: rotate(90deg);
 }
 
-/* アコーディオンの中身 */
+/* アコーディオン中身 */
 .panel {
     display: none;
-    padding: 10px 4px 0 4px;
-    animation: fadeIn 0.3s ease;
+    padding: 12px 6px 0 6px;
+    animation: fadeIn 0.25s ease;
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 /* =============================== */
@@ -120,19 +125,20 @@ label {
 /* 🧩 例文ボタン */
 /* =============================== */
 button.example {
-    background: #7f8c8d;
+    background: #8a97a0;
     color: #fff;
-    padding: 6px 12px;
+    padding: 6px 14px;
     font-size: 13px;
     border-radius: 6px;
     border: none;
     cursor: pointer;
     margin-bottom: 8px;
-    transition: 0.2s;
+    transition: background 0.2s, transform 0.15s;
 }
 
 button.example:hover {
-    background: #626e70;
+    background: #6f7a82;
+    transform: translateY(-1px);
 }
 
 /* =============================== */
@@ -140,10 +146,10 @@ button.example:hover {
 /* =============================== */
 textarea {
     width: 100%;
-    min-height: 130px;
-    padding: 14px;
-    border: 1px solid #d0d7e2;
-    border-radius: 10px;
+    min-height: 140px;
+    padding: 16px;
+    border: 1px solid #cfd6e1;
+    border-radius: 12px;
     resize: vertical;
     font-size: 15px;
     background: #fafbfc;
@@ -154,7 +160,7 @@ textarea:focus {
     border-color: #4a90e2;
     background: #fff;
     outline: none;
-    box-shadow: 0 0 0 3px rgba(74,144,226,0.15);
+    box-shadow: 0 0 0 3px rgba(74,144,226,0.18);
 }
 
 /* =============================== */
@@ -162,35 +168,39 @@ textarea:focus {
 /* =============================== */
 button.generate,
 button.stop {
-    padding: 14px 26px;
+    padding: 14px 28px;
     font-size: 16px;
-    border-radius: 10px;
+    border-radius: 12px;
     border: none;
     cursor: pointer;
-    margin-top: 26px;
+    margin-top: 28px;
     transition: 0.25s;
     font-weight: 600;
 }
 
 /* 作成ボタン */
 button.generate {
-    background: #4a90e2;
+    background: linear-gradient(135deg, #4a90e2, #357ab8);
     color: #fff;
     margin-right: 12px;
-    box-shadow: 0 4px 12px rgba(74,144,226,0.3);
+    box-shadow: 0 6px 16px rgba(74,144,226,0.35);
 }
+
 button.generate:hover {
-    background: #357ab8;
-    box-shadow: 0 6px 16px rgba(74,144,226,0.4);
+    background: linear-gradient(135deg, #3f7ecb, #2f6aa3);
+    box-shadow: 0 8px 20px rgba(74,144,226,0.45);
+    transform: translateY(-1px);
 }
 
 /* 停止ボタン */
 button.stop {
-    background: #d0d3d4;
+    background: #d4d7da;
     color: #333;
 }
+
 button.stop:hover {
-    background: #b5b8b9;
+    background: #bfc3c6;
+    transform: translateY(-1px);
 }
 
 /* =============================== */
@@ -198,13 +208,14 @@ button.stop:hover {
 /* =============================== */
 #result {
     background: #ffffff;
-    padding: 28px;
-    border-radius: 14px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.07);
     white-space: pre-wrap;
-    font-size: 15px;
-    line-height: 1.8;
+    font-size: 15.5px;
+    line-height: 1.85;
     border: 1px solid #e5e9f2;
+    margin-top: 32px;
 }
 
 /* =============================== */
@@ -213,7 +224,7 @@ button.stop:hover {
 @media (max-width: 600px) {
 
     body {
-        padding: 20px;
+        padding: 22px;
     }
 
     h1 {
@@ -227,16 +238,11 @@ button.stop:hover {
     }
 
     form {
-        padding: 22px;
-    }
-
-    label {
-        font-size: 14px;
-        margin-top: 16px;
+        padding: 24px;
     }
 
     textarea {
-        min-height: 110px;
+        min-height: 120px;
         font-size: 14px;
         padding: 12px;
     }
@@ -249,9 +255,9 @@ button.stop:hover {
         font-size: 15px;
         padding: 14px;
     }
-}
+
     #result {
-        padding: 18px;
+        padding: 20px;
         font-size: 15px;
     }
 }
