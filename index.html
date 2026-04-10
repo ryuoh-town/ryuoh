@@ -4,236 +4,298 @@
 <meta charset="UTF-8">
 <title>補助金サポート Canvas</title>
 
-<!-- =============================== -->
-<!-- 🌐 CSS：完全統合版 -->
-<!-- =============================== -->
-<style>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-/* =============================== */
-/* 🌐 全体レイアウト（ハイエンドUI） */
-/* =============================== */
-body {
-    font-family: "Inter", "Helvetica Neue", "Arial", sans-serif;
-    max-width: 880px;
-    margin: auto;
-    padding: 48px 28px;
-    background: #f3f5f8;
-    color: #2c3e50;
-    line-height: 1.7;
-    letter-spacing: 0.2px;
+</head>
+
+<body>
+
+<h1>補助金サポート Canvas</h1>
+<p>必要事項を入力すると、補助金申請に必要な要項をAIに考えさせる文章ができます。</p>
+
+<form id="form">
+
+    <!-- Step 1 -->
+    <section>
+        <div class="step-title">
+            <i class="fa-solid fa-list-check"></i> Step 1：補助金の種類を選択
+        </div>
+
+        <label for="type">補助金の種類：</label>
+        <select id="type" class="input-select">
+            <option value="jizoku">小規模事業者持続化補助金</option>
+            <option value="mono">ものづくり補助金（準備中）</option>
+            <option value="saikouchiku">事業再構築補助金（準備中）</option>
+        </select>
+    </section>
+
+    <!-- Step 2 -->
+    <section>
+        <div class="step-title">
+            <i class="fa-solid fa-pen-to-square"></i> Step 2：事業者情報の入力
+        </div>
+
+        <button type="button" class="accordion">
+            ① 解決したい課題
+            <span class="icon"><i class="fa-solid fa-chevron-right"></i></span>
+        </button>
+        <div class="panel">
+            <button type="button" class="example" onclick="showExample('problem')">例文を見る</button>
+            <textarea id="problem" placeholder="例：○○を効率的に生産するために△△を導入したい"></textarea>
+        </div>
+
+        <button type="button" class="accordion">
+            ②-1 事業を始めてからのいきさつ
+            <span class="icon"><i class="fa-solid fa-chevron-right"></i></span>
+        </button>
+        <div class="panel">
+            <button type="button" class="example" onclick="showExample('history')">例文を見る</button>
+            <textarea id="history"></textarea>
+        </div>
+
+        <button type="button" class="accordion">
+            ②-2 所在地・商圏
+            <span class="icon"><i class="fa-solid fa-chevron-right"></i></span>
+        </button>
+        <div class="panel">
+            <button type="button" class="example" onclick="showExample('location')">例文を見る</button>
+            <textarea id="location"></textarea>
+        </div>
+
+        <button type="button" class="accordion">
+            ②-3 取り扱い商品・サービス
+            <span class="icon"><i class="fa-solid fa-chevron-right"></i></span>
+        </button>
+        <div class="panel">
+            <button type="button" class="example" onclick="showExample('products')">例文を見る</button>
+            <textarea id="products"></textarea>
+        </div>
+
+        <button type="button" class="accordion">
+            ②-4 強みと経営課題
+            <span class="icon"><i class="fa-solid fa-chevron-right"></i></span>
+        </button>
+        <div class="panel">
+            <button type="button" class="example" onclick="showExample('strengths')">例文を見る</button>
+            <textarea id="strengths"></textarea>
+        </div>
+
+        <button type="button" class="accordion">
+            ③ 補助金申請したい内容
+            <span class="icon"><i class="fa-solid fa-chevron-right"></i></span>
+        </button>
+        <div class="panel">
+            <button type="button" class="example" onclick="showExample('apply')">例文を見る</button>
+            <textarea id="apply"></textarea>
+        </div>
+    </section>
+
+    <!-- Step 3 -->
+    <section>
+        <div class="step-title">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Step 3：プロンプト生成
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="generate" onclick="generatePrompt()">作成</button>
+            <button type="button" class="stop" onclick="stopGenerate()">停止</button>
+        </div>
+    </section>
+
+</form>
+
+<div id="message"></div>
+<div id="result"></div>
+
+<!-- 例文モーダル -->
+<div id="exampleModal" class="modal-overlay">
+    <div class="modal-content">
+        <h3>例文</h3>
+        <p id="exampleText" class="modal-text"></p>
+
+        <div class="modal-buttons">
+            <button class="generate" type="button" onclick="insertExample()">この例文を挿入する</button>
+            <button class="stop" type="button" onclick="closeExample()">閉じる</button>
+        </div>
+    </div>
+</div>
+
+<script>
+/* アコーディオン開閉 */
+document.addEventListener("DOMContentLoaded", () => {
+    const accordions = document.querySelectorAll(".accordion");
+
+    accordions.forEach(acc => {
+        acc.addEventListener("click", () => {
+            acc.classList.toggle("active");
+            const panel = acc.nextElementSibling;
+            panel.style.display = panel.style.display === "block" ? "none" : "block";
+        });
+    });
+});
+
+/* 例文データ */
+const examples = {
+    problem: "私が生産している○○を効率的に生産し、多くの方に販売するために△△を導入したい。",
+    history: "○○年に創業し、△△町を中心に地域密着型のサービスを展開してきました。",
+    location: "△△町を中心に○○や□□の顧客も抱えています。主要道路沿いで視認性が高く、交通の便も良い立地です。",
+    products: "売上は○○が●％、△△が●％、□□が●％となっています。",
+    strengths:
+`強み
+・地域密着型事業者として信頼が高い
+・多様な商品を取り扱っているため、多様な注文に対応可能
+
+弱み
+・商圏人口が減少傾向にあり販路拡大が必要
+・生産場所が狭く、機械も老朽化している
+・DX化が遅れており、生産性が低い`,
+    apply: "○○を効率的に生産するため、オートメーション化された△△を導入する。"
+};
+
+let currentField = null;
+
+/* モーダル表示 */
+function showExample(field) {
+    currentField = field;
+    document.getElementById("exampleText").textContent = examples[field];
+    document.getElementById("exampleModal").style.display = "flex";
 }
 
-/* =============================== */
-/* 🏷 タイトル・説明文 */
-/* =============================== */
-h1 {
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 34px;
-    font-weight: 700;
-    color: #1d2735;
+/* モーダル閉じる */
+function closeExample() {
+    document.getElementById("exampleModal").style.display = "none";
 }
 
-p {
-    text-align: center;
-    margin-bottom: 40px;
-    color: #6b7785;
-    font-size: 15.5px;
+/* 例文挿入（上書き確認あり） */
+function insertExample() {
+    if (!currentField) return;
+
+    const target = document.getElementById(currentField);
+    if (target.value.trim() !== "") {
+        const ok = confirm("現在の入力内容は上書きされます。よろしいですか？");
+        if (!ok) return;
+    }
+
+    target.value = examples[currentField];
+    closeExample();
 }
 
-/* =============================== */
-/* 📦 入力フォームカード */
-/* =============================== */
-form {
-    background: #ffffff;
-    padding: 36px;
-    border-radius: 18px;
-    border: 1px solid #e6e9ef;
-    box-shadow: 0 12px 32px rgba(0,0,0,0.06);
-    transition: box-shadow 0.3s ease;
+/* 持続化補助金テンプレート（元のロジックを維持） */
+function getJizokuTemplate(problem, history, location, products, strengths, apply) {
+return `
+あなたは小規模事業者持続化補助金の専門家であり、補助金審査員の視点を理解した中小企業診断士です。
+以下の素材をもとに、審査項目に完全準拠しつつ、事業者本人が書いたような自然な文章を生成してください。
+
+【文章スタイル（重要）】
+- 「結論→理由→補足」の論理構造は内部で保持するが、文章は自然な語り口にする
+- テンプレート感・AI感を排除し、事業者が語るような一人称で書く
+- 抽象表現は禁止。必ず具体化し、必要な数値は「○○％」「○○時間」など空欄形式でよい
+- 専門用語を使いすぎず、誰が読んでも理解できる文章にする
+
+【事業者が入力した素材】
+① 解決したい課題：
+${problem}
+
+② 事業のいきさつ：
+${history}
+
+③ 所在地・商圏：
+${location}
+
+④ 取り扱い商品・サービス：
+${products}
+
+⑤ 強みと経営課題：
+${strengths}
+
+⑥ 補助金申請したい内容：
+${apply}
+
+---
+
+# 審査項目に基づく生成ルール
+
+## 1. 自社の経営状況分析の妥当性
+- 現状把握が正確であること
+- 強み・弱みを論理的に整理すること
+
+## 2. 経営方針・目標と今後のプランの適切性
+- 強み・弱みを踏まえた目標（数値必須）
+- 市場・商圏・顧客ニーズを踏まえた計画
+
+## 3. 補助事業計画の有効性
+- 補助事業の内容が具体的で実現可能
+- 販路開拓に必要である理由を明確化
+- 経営方針・目標との整合性
+
+---
+
+# 生成してほしい内容（12項目）
+1. 市場の動向
+2. 顧客ニーズ
+3. 自社の強み
+4. 自社の弱み
+5. 経営方針・目標（数値を含む）
+6. 今後の事業展開
+7. 補助事業で行う事業名（30文字以内）
+8. 事業の概要（30文字以内）
+9. 背景・目的
+10. 具体的な取組（30文字以内）
+11. 具体的な取組内容の詳細（数値を含む）
+12. 取組の効果・効果の試算（数値を含む）
+
+---
+
+# 追加要件
+- 補助金の必要性を自然に盛り込む
+- 実現可能性・費用対効果・持続性を文章内に織り込む
+- 審査員が「この事業者は自社を理解している」と感じる深さで書く
+
+---
+
+# 出力順（厳守）
+① 事業計画書（12項目）
+② 辛口アドバイス（弱点指摘）
+③ 追加で必要な質問（5〜10個）
+
+順番は必ずこの通りに出力すること。
+`;
 }
 
-form:hover {
-    box-shadow: 0 16px 40px rgba(0,0,0,0.08);
+/* プロンプト生成 */
+function generatePrompt() {
+    const problem   = document.getElementById("problem").value;
+    const history   = document.getElementById("history").value;
+    const location  = document.getElementById("location").value;
+    const products  = document.getElementById("products").value;
+    const strengths = document.getElementById("strengths").value;
+    const apply     = document.getElementById("apply").value;
+    const type      = document.getElementById("type").value;
+
+    let prompt = "";
+
+    if (type === "jizoku") {
+        prompt = getJizokuTemplate(problem, history, location, products, strengths, apply);
+    } else {
+        prompt = "この補助金テンプレートは現在準備中です。";
+    }
+
+    document.getElementById("result").textContent = prompt;
+
+    const msg = document.getElementById("message");
+    msg.style.display = "block";
+    msg.textContent = "プロンプトをコピーしました。AIツールに貼り付けて実行してください。";
+
+    navigator.clipboard.writeText(prompt);
 }
 
-/* =============================== */
-/* 🪜 ステップ見出し */
-/* =============================== */
-.step-title {
-    font-size: 18px;
-    font-weight: 700;
-    margin-top: 42px;
-    margin-bottom: 14px;
-    color: #1f2d3d;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+/* 停止 */
+function stopGenerate() {
+    document.getElementById("result").textContent = "生成を停止しました。";
+    document.getElementById("message").style.display = "none";
 }
+</script>
 
-.step-title i {
-    color: #4a90e2;
-    font-size: 22px;
-}
-
-/* =============================== */
-/* 📌 アコーディオン */
-/* =============================== */
-.accordion {
-    background: #f8fafc;
-    border: 1px solid #d9e1ec;
-    border-radius: 12px;
-    margin-bottom: 14px;
-    padding: 16px 20px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 600;
-    color: #2c3e50;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    transition: background 0.25s, border-color 0.25s;
-}
-
-.accordion:hover {
-    background: #eef3f8;
-    border-color: #c8d4e3;
-}
-
-.accordion .icon i {
-    transition: transform 0.25s;
-}
-
-.accordion.active .icon i {
-    transform: rotate(90deg);
-}
-
-/* アコーディオン中身 */
-.panel {
-    display: none;
-    padding: 12px 6px 0 6px;
-    animation: fadeIn 0.25s ease;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-4px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-
-/* =============================== */
-/* 📝 ラベル */
-/* =============================== */
-label {
-    font-weight: 600;
-    display: block;
-    margin-bottom: 6px;
-    margin-top: 22px;
-    color: #34495e;
-    font-size: 15px;
-}
-
-/* =============================== */
-/* 🧩 例文ボタン */
-/* =============================== */
-button.example {
-    background: #8a97a0;
-    color: #fff;
-    padding: 6px 14px;
-    font-size: 13px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    margin-bottom: 8px;
-    transition: background 0.2s, transform 0.15s;
-}
-
-button.example:hover {
-    background: #6f7a82;
-    transform: translateY(-1px);
-}
-
-/* =============================== */
-/* ✏ テキストエリア */
-/* =============================== */
-textarea {
-    width: 100%;
-    min-height: 140px;
-    padding: 16px;
-    border: 1px solid #cfd6e1;
-    border-radius: 12px;
-    resize: vertical;
-    font-size: 15px;
-    background: #fafbfc;
-    transition: 0.25s;
-}
-
-textarea:focus {
-    border-color: #4a90e2;
-    background: #fff;
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(74,144,226,0.18);
-}
-
-/* =============================== */
-/* 🔘 ボタン（作成・停止） */
-/* =============================== */
-.button-group {
-    margin-top: 20px;
-}
-
-button.generate,
-button.stop {
-    padding: 14px 28px;
-    font-size: 16px;
-    border-radius: 12px;
-    border: none;
-    cursor: pointer;
-    transition: 0.25s;
-    font-weight: 600;
-}
-
-/* 作成ボタン */
-button.generate {
-    background: linear-gradient(135deg, #4a90e2, #357ab8);
-    color: #fff;
-    margin-right: 12px;
-    box-shadow: 0 6px 16px rgba(74,144,226,0.35);
-}
-
-button.generate:hover {
-    background: linear-gradient(135deg, #3f7ecb, #2f6aa3);
-    box-shadow: 0 8px 20px rgba(74,144,226,0.45);
-    transform: translateY(-1px);
-}
-
-/* 停止ボタン */
-button.stop {
-    background: #d4d7da;
-    color: #333;
-}
-
-button.stop:hover {
-    background: #bfc3c6;
-    transform: translateY(-1px);
-}
-
-/* =============================== */
-/* 📄 結果表示エリア */
-/* =============================== */
-#result {
-    background: #ffffff;
-    padding: 30px;
-    border-radius: 16px;
-    box-shadow: 0 8px 22px rgba(0,0,0,0.07);
-    white-space: pre-wrap;
-    font-size: 15.5px;
-    line-height: 1.85;
-    border: 1px solid #e5e9f2;
-    margin-top: 32px;
-}
-
-/* =============================== */
-/* 📌 モーダル */
-/* =============================== */
-.modal-overlay {
-    display:none
+</body>
+</html>
