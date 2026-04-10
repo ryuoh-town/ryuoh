@@ -95,47 +95,123 @@ label {
 }
 
 /* =============================== */
-/* 📌 アコーディオン */
+/* 🎨 Step2 アコーディオン（完全洗練版） */
 /* =============================== */
+
+/* アコーディオン全体のカード感 */
 .accordion {
-    background: #f8fafc;
-    border: 1px solid #d9e1ec;
-    border-radius: 12px;
-    margin-bottom: 14px;
-    padding: 16px 20px;
+    background: #ffffff;
+    border: 1px solid #dfe5ee;
+    border-radius: 14px;
+    padding: 0 20px;
+    margin-bottom: 16px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 64px; /* ← 高さを完全統一 */
+    transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+/* ホバー時の高級感 */
+.accordion:hover {
+    background: #f7f9fc;
+    border-color: #c8d4e3;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+}
+
+/* 左側の番号バッジ */
+.accordion .badge {
+    background: #4a90e2;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-right: 12px;
+    min-width: 32px;
+    text-align: center;
+}
+
+/* タイトル部分 */
+.accordion .title {
+    flex: 1;
     font-size: 16px;
     font-weight: 600;
     color: #2c3e50;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    transition: background 0.25s, border-color 0.25s;
+    gap: 12px;
 }
 
-.accordion:hover {
-    background: #eef3f8;
-    border-color: #c8d4e3;
-}
-
+/* 右側の矢印アイコン */
 .accordion .icon i {
-    transition: transform 0.25s;
+    font-size: 18px;
+    color: #4a90e2;
+    transition: transform 0.25s ease;
 }
 
+/* 開いたときの矢印回転 */
 .accordion.active .icon i {
     transform: rotate(90deg);
 }
 
-/* アコーディオン中身 */
+/* =============================== */
+/* 📌 パネル（開閉アニメーション付き） */
+/* =============================== */
+
 .panel {
-    display: none;
-    padding: 12px 6px 0 6px;
-    animation: fadeIn 0.25s ease;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.35s ease, padding 0.25s ease;
+    background: #ffffff;
+    border-left: 1px solid #e6e9ef;
+    border-right: 1px solid #e6e9ef;
+    border-bottom: 1px solid #e6e9ef;
+    border-radius: 0 0 14px 14px;
+    padding: 0 20px;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-4px); }
-    to   { opacity: 1; transform: translateY(0); }
+/* 開いた状態 */
+.panel.open {
+    padding: 16px 20px 20px;
+    max-height: 600px; /* ← 必要に応じて調整 */
+}
+
+/* =============================== */
+/* 📌 パネル内の例文ボタン・テキストエリア */
+/* =============================== */
+
+.panel button.example {
+    margin-bottom: 10px;
+}
+
+.panel textarea {
+    margin-top: 6px;
+}
+
+/* =============================== */
+/* 📱 モバイル最適化 */
+/* =============================== */
+@media (max-width: 600px) {
+    .accordion {
+        min-height: 58px;
+        padding: 0 16px;
+    }
+
+    .accordion .badge {
+        font-size: 12px;
+        padding: 3px 8px;
+    }
+
+    .accordion .title {
+        font-size: 15px;
+    }
+
+    .panel.open {
+        padding: 14px 16px 18px;
+    }
 }
 
 /* =============================== */
