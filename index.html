@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>補助金サポート Canvas</title>
+    <meta charset="UTF-8">
+    <title>補助金サポート Canvas</title>
 
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
 <body>
@@ -14,7 +13,7 @@
 <h1>補助金サポート Canvas</h1>
 <p>必要事項を入力すると、補助金申請に必要な要項をAIに考えさせる文章ができます。</p>
 
-<form id="form">
+<form id="form" onsubmit="return false;">
 
     <!-- Step 1 -->
     <section>
@@ -44,7 +43,7 @@
         </button>
         <div class="panel">
             <button type="button" class="example" onclick="showExample('problem')">例文を見る</button>
-            <textarea id="problem"></textarea>
+            <textarea id="problem" rows="4" placeholder="解決したい課題を具体的に記入してください。"></textarea>
         </div>
 
         <!-- ②-1 -->
@@ -55,7 +54,7 @@
         </button>
         <div class="panel">
             <button type="button" class="example" onclick="showExample('history')">例文を見る</button>
-            <textarea id="history"></textarea>
+            <textarea id="history" rows="4" placeholder="創業の経緯やこれまでの歩みを記入してください。"></textarea>
         </div>
 
         <!-- ②-2 -->
@@ -66,7 +65,7 @@
         </button>
         <div class="panel">
             <button type="button" class="example" onclick="showExample('location')">例文を見る</button>
-            <textarea id="location"></textarea>
+            <textarea id="location" rows="4" placeholder="所在地や主な商圏、立地の特徴などを記入してください。"></textarea>
         </div>
 
         <!-- ②-3 -->
@@ -77,7 +76,7 @@
         </button>
         <div class="panel">
             <button type="button" class="example" onclick="showExample('products')">例文を見る</button>
-            <textarea id="products"></textarea>
+            <textarea id="products" rows="4" placeholder="主な商品・サービスと売上構成などを記入してください。"></textarea>
         </div>
 
         <!-- ②-4 -->
@@ -88,7 +87,7 @@
         </button>
         <div class="panel">
             <button type="button" class="example" onclick="showExample('strengths')">例文を見る</button>
-            <textarea id="strengths"></textarea>
+            <textarea id="strengths" rows="6" placeholder="自社の強み・弱み、経営課題などを箇条書きで記入してください。"></textarea>
         </div>
 
         <!-- ③ -->
@@ -99,7 +98,7 @@
         </button>
         <div class="panel">
             <button type="button" class="example" onclick="showExample('apply')">例文を見る</button>
-            <textarea id="apply"></textarea>
+            <textarea id="apply" rows="4" placeholder="導入したい設備や取り組み内容を記入してください。"></textarea>
         </div>
     </section>
 
@@ -117,7 +116,7 @@
 
 </form>
 
-<div id="message"></div>
+<div id="message" style="display:none;"></div>
 <div id="result"></div>
 
 <!-- 例文モーダル -->
@@ -216,34 +215,80 @@ function closeAfterModal() {
     document.getElementById("afterModal").classList.remove("show");
 }
 
+/* 小規模事業者持続化補助金用テンプレート生成 */
+function getJizokuTemplate(problem, history, location, products, strengths, apply) {
+    return `
+あなたは「小規模事業者持続化補助金」の申請書を作成する専門コンサルタントです。
+以下の事業者情報をもとに、採択されやすい申請書の素案（日本語）を作成してください。
+
+【事業者情報】
+1. 解決したい課題：
+${problem || "（未記入）"}
+
+2. 事業を始めてからのいきさつ：
+${history || "（未記入）"}
+
+3. 所在地・商圏：
+${location || "（未記入）"}
+
+4. 取り扱い商品・サービス：
+${products || "（未記入）"}
+
+5. 強みと経営課題：
+${strengths || "（未記入）"}
+
+6. 補助金申請したい内容（実施したい取組）：
+${apply || "（未記入）"}
+
+【出力してほしい内容】
+・小規模事業者持続化補助金の様式に沿った構成で、
+  「経営計画」「補助事業計画」の両方を意識した文章を作成してください。
+・見出しや箇条書きを適宜用いて、読みやすく整理してください。
+・専門用語は使いすぎず、審査員に伝わりやすい平易な表現を心がけてください。
+`.trim();
+}
+
 /* プロンプト生成 */
 function generatePrompt() {
-    const problem   = document.getElementById("problem").value;
-    const history   = document.getElementById("history").value;
-    const location  = document.getElementById("location").value;
-    const products  = document.getElementById("products").value;
-    const strengths = document.getElementById("strengths").value;
-    const apply     = document.getElementById("apply").value;
+    const problem   = document.getElementById("problem").value.trim();
+    const history   = document.getElementById("history").value.trim();
+    const location  = document.getElementById("location").value.trim();
+    const products  = document.getElementById("products").value.trim();
+    const strengths = document.getElementById("strengths").value.trim();
+    const apply     = document.getElementById("apply").value.trim();
     const type      = document.getElementById("type").value;
+
+    const msg = document.getElementById("message");
+    const result = document.getElementById("result");
 
     let prompt = "";
 
     if (type === "jizoku") {
+        // 簡易バリデーション（最低限、課題と申請内容は入力を促す）
+        if (!problem || !apply) {
+            msg.style.display = "block";
+            msg.textContent = "「解決したい課題」と「補助金申請したい内容」は、できるだけ具体的に入力してください。";
+            result.textContent = "";
+            return;
+        }
         prompt = getJizokuTemplate(problem, history, location, products, strengths, apply);
     } else {
         prompt = "この補助金テンプレートは現在準備中です。";
     }
 
-    document.getElementById("result").textContent = prompt;
+    result.textContent = prompt;
 
-    const msg = document.getElementById("message");
     msg.style.display = "block";
     msg.textContent = "プロンプトをコピーしました。AIツールに貼り付けて実行してください。";
 
-    navigator.clipboard.writeText(prompt)
-        .catch(() => {
-            msg.textContent = "コピーに失敗しました。手動でコピーしてください。";
-        });
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(prompt)
+            .catch(() => {
+                msg.textContent = "自動コピーに失敗しました。表示されているプロンプトを手動でコピーしてください。";
+            });
+    } else {
+        msg.textContent = "このブラウザでは自動コピーに対応していません。表示されているプロンプトを手動でコピーしてください。";
+    }
 
     showAfterModal();
 }
@@ -251,7 +296,8 @@ function generatePrompt() {
 /* 停止 */
 function stopGenerate() {
     document.getElementById("result").textContent = "生成を停止しました。";
-    document.getElementById("message").style.display = "none";
+    const msg = document.getElementById("message");
+    msg.style.display = "none";
 }
 </script>
 
