@@ -47,10 +47,10 @@
             <textarea id="problem"></textarea>
         </div>
 
-        <!-- ②-1 -->
+        <!-- ②-1 事業を始めてからのいきさつ -->
         <button type="button" class="accordion">
             <span class="badge">②-1</span>
-            事業を始めてからのいきさつ
+            <span class="title">事業を始めてからのいきさつ</span>
             <span class="icon"><i class="fa-solid fa-chevron-right"></i></span>
         </button>
         <div class="panel">
@@ -58,10 +58,10 @@
             <textarea id="history"></textarea>
         </div>
 
-        <!-- ②-2 -->
+        <!-- ②-2 所在地・商圏 -->
         <button type="button" class="accordion">
             <span class="badge">②-2</span>
-            所在地・商圏
+            <span class="title">所在地・商圏</span>
             <span class="icon"><i class="fa-solid fa-chevron-right"></i></span>
         </button>
         <div class="panel">
@@ -69,10 +69,10 @@
             <textarea id="location"></textarea>
         </div>
 
-        <!-- ②-3 -->
+        <!-- ②-3 取り扱い商品・サービス -->
         <button type="button" class="accordion">
             <span class="badge">②-3</span>
-            取り扱い商品・サービス
+            <span class="title">取り扱い商品・サービス</span>
             <span class="icon"><i class="fa-solid fa-chevron-right"></i></span>
         </button>
         <div class="panel">
@@ -80,10 +80,10 @@
             <textarea id="products"></textarea>
         </div>
 
-        <!-- ②-4 -->
+        <!-- ②-4 強みと経営課題 -->
         <button type="button" class="accordion">
             <span class="badge">②-4</span>
-            強みと経営課題
+            <span class="title">強みと経営課題</span>
             <span class="icon"><i class="fa-solid fa-chevron-right"></i></span>
         </button>
         <div class="panel">
@@ -91,10 +91,10 @@
             <textarea id="strengths"></textarea>
         </div>
 
-        <!-- ③ -->
+        <!-- ③ 補助金申請したい内容 -->
         <button type="button" class="accordion">
             <span class="badge">③</span>
-            補助金申請したい内容
+            <span class="title">補助金申請したい内容</span>
             <span class="icon"><i class="fa-solid fa-chevron-right"></i></span>
         </button>
         <div class="panel">
@@ -134,7 +134,7 @@
 </div>
 
 <script>
-/* アコーディオン（class制御） */
+/* アコーディオン開閉（CSSの .panel.open と連動） */
 document.addEventListener("DOMContentLoaded", () => {
     const accordions = document.querySelectorAll(".accordion");
 
@@ -179,7 +179,7 @@ function closeExample() {
     document.getElementById("exampleModal").classList.remove("show");
 }
 
-/* 例文挿入 */
+/* 例文挿入（上書き確認あり） */
 function insertExample() {
     if (!currentField) return;
 
@@ -193,11 +193,16 @@ function insertExample() {
     closeExample();
 }
 
-/* 持続化補助金テンプレート */
+/* 持続化補助金テンプレート（元ロジックをフル維持） */
 function getJizokuTemplate(problem, history, location, products, strengths, apply) {
 return `
 あなたは小規模事業者持続化補助金の専門家であり、補助金審査員の視点を理解した中小企業診断士です。
 以下の素材をもとに、審査項目に完全準拠しつつ、事業者本人が書いたような自然な文章を生成してください。
+【文章スタイル（重要）】
+- 「結論→理由→補足」の論理構造は内部で保持するが、文章は自然な語り口にする
+- テンプレート感・AI感を排除し、事業者が語るような一人称で書く
+- 抽象表現は禁止。必ず具体化し、必要な数値は「○○％」「○○時間」など空欄形式でよい
+- 専門用語を使いすぎず、誰が読んでも理解できる文章にする
 
 【事業者が入力した素材】
 ① 解決したい課題：
@@ -218,7 +223,54 @@ ${strengths}
 ⑥ 補助金申請したい内容：
 ${apply}
 
----（以下略）
+---
+
+# 審査項目に基づく生成ルール
+
+## 1. 自社の経営状況分析の妥当性
+- 現状把握が正確であること
+- 強み・弱みを論理的に整理すること
+
+## 2. 経営方針・目標と今後のプランの適切性
+- 強み・弱みを踏まえた目標（数値必須）
+- 市場・商圏・顧客ニーズを踏まえた計画
+
+## 3. 補助事業計画の有効性
+- 補助事業の内容が具体的で実現可能
+- 販路開拓に必要である理由を明確化
+- 経営方針・目標との整合性
+
+---
+
+# 生成してほしい内容（12項目）
+1. 市場の動向
+2. 顧客ニーズ
+3. 自社の強み
+4. 自社の弱み
+5. 経営方針・目標（数値を含む）
+6. 今後の事業展開
+7. 補助事業で行う事業名（30文字以内）
+8. 事業の概要（30文字以内）
+9. 背景・目的
+10. 具体的な取組（30文字以内）
+11. 具体的な取組内容の詳細（数値を含む）
+12. 取組の効果・効果の試算（数値を含む）
+
+---
+
+# 追加要件
+- 補助金の必要性を自然に盛り込む
+- 実現可能性・費用対効果・持続性を文章内に織り込む
+- 審査員が「この事業者は自社を理解している」と感じる深さで書く
+
+---
+
+# 出力順（厳守）
+① 事業計画書（12項目）
+② 辛口アドバイス（弱点指摘）
+③ 追加で必要な質問（5〜10個）
+
+順番は必ずこの通りに出力すること。
 `;
 }
 
