@@ -47,7 +47,7 @@
             <textarea id="problem"></textarea>
         </div>
 
-        <!-- ②-1 事業を始めてからのいきさつ -->
+        <!-- ②-1 -->
         <button type="button" class="accordion">
             <span class="badge">②-1</span>
             <span class="title">事業を始めてからのいきさつ</span>
@@ -58,7 +58,7 @@
             <textarea id="history"></textarea>
         </div>
 
-        <!-- ②-2 所在地・商圏 -->
+        <!-- ②-2 -->
         <button type="button" class="accordion">
             <span class="badge">②-2</span>
             <span class="title">所在地・商圏</span>
@@ -69,7 +69,7 @@
             <textarea id="location"></textarea>
         </div>
 
-        <!-- ②-3 取り扱い商品・サービス -->
+        <!-- ②-3 -->
         <button type="button" class="accordion">
             <span class="badge">②-3</span>
             <span class="title">取り扱い商品・サービス</span>
@@ -80,7 +80,7 @@
             <textarea id="products"></textarea>
         </div>
 
-        <!-- ②-4 強みと経営課題 -->
+        <!-- ②-4 -->
         <button type="button" class="accordion">
             <span class="badge">②-4</span>
             <span class="title">強みと経営課題</span>
@@ -91,7 +91,7 @@
             <textarea id="strengths"></textarea>
         </div>
 
-        <!-- ③ 補助金申請したい内容 -->
+        <!-- ③ -->
         <button type="button" class="accordion">
             <span class="badge">③</span>
             <span class="title">補助金申請したい内容</span>
@@ -133,8 +133,21 @@
     </div>
 </div>
 
+<!-- 生成後の案内モーダル -->
+<div id="afterModal" class="modal-overlay">
+    <div class="modal-content">
+        <h3>プロンプトをコピーしました</h3>
+        <p class="modal-text">
+            生成AI（ChatGPT / Copilot / Claude など）に貼り付けて実行してください。
+        </p>
+        <div class="modal-buttons">
+            <button class="generate" type="button" onclick="closeAfterModal()">OK</button>
+        </div>
+    </div>
+</div>
+
 <script>
-/* アコーディオン開閉（CSSの .panel.open と連動） */
+/* アコーディオン */
 document.addEventListener("DOMContentLoaded", () => {
     const accordions = document.querySelectorAll(".accordion");
 
@@ -179,7 +192,7 @@ function closeExample() {
     document.getElementById("exampleModal").classList.remove("show");
 }
 
-/* 例文挿入（上書き確認あり） */
+/* 例文挿入 */
 function insertExample() {
     if (!currentField) return;
 
@@ -193,85 +206,14 @@ function insertExample() {
     closeExample();
 }
 
-/* 持続化補助金テンプレート（元ロジックをフル維持） */
-function getJizokuTemplate(problem, history, location, products, strengths, apply) {
-return `
-あなたは小規模事業者持続化補助金の専門家であり、補助金審査員の視点を理解した中小企業診断士です。
-以下の素材をもとに、審査項目に完全準拠しつつ、事業者本人が書いたような自然な文章を生成してください。
-【文章スタイル（重要）】
-- 「結論→理由→補足」の論理構造は内部で保持するが、文章は自然な語り口にする
-- テンプレート感・AI感を排除し、事業者が語るような一人称で書く
-- 抽象表現は禁止。必ず具体化し、必要な数値は「○○％」「○○時間」など空欄形式でよい
-- 専門用語を使いすぎず、誰が読んでも理解できる文章にする
+/* afterModal 表示 */
+function showAfterModal() {
+    document.getElementById("afterModal").classList.add("show");
+}
 
-【事業者が入力した素材】
-① 解決したい課題：
-${problem}
-
-② 事業のいきさつ：
-${history}
-
-③ 所在地・商圏：
-${location}
-
-④ 取り扱い商品・サービス：
-${products}
-
-⑤ 強みと経営課題：
-${strengths}
-
-⑥ 補助金申請したい内容：
-${apply}
-
----
-
-# 審査項目に基づく生成ルール
-
-## 1. 自社の経営状況分析の妥当性
-- 現状把握が正確であること
-- 強み・弱みを論理的に整理すること
-
-## 2. 経営方針・目標と今後のプランの適切性
-- 強み・弱みを踏まえた目標（数値必須）
-- 市場・商圏・顧客ニーズを踏まえた計画
-
-## 3. 補助事業計画の有効性
-- 補助事業の内容が具体的で実現可能
-- 販路開拓に必要である理由を明確化
-- 経営方針・目標との整合性
-
----
-
-# 生成してほしい内容（12項目）
-1. 市場の動向
-2. 顧客ニーズ
-3. 自社の強み
-4. 自社の弱み
-5. 経営方針・目標（数値を含む）
-6. 今後の事業展開
-7. 補助事業で行う事業名（30文字以内）
-8. 事業の概要（30文字以内）
-9. 背景・目的
-10. 具体的な取組（30文字以内）
-11. 具体的な取組内容の詳細（数値を含む）
-12. 取組の効果・効果の試算（数値を含む）
-
----
-
-# 追加要件
-- 補助金の必要性を自然に盛り込む
-- 実現可能性・費用対効果・持続性を文章内に織り込む
-- 審査員が「この事業者は自社を理解している」と感じる深さで書く
-
----
-
-# 出力順（厳守）
-① 事業計画書（12項目）
-② 辛口アドバイス（弱点指摘）
-③ 追加で必要な質問（5〜10個）
-
-順番は必ずこの通りに出力すること。
-`;
+/* afterModal 閉じる */
+function closeAfterModal() {
+    document.getElementById("afterModal").classList.remove("show");
 }
 
 /* プロンプト生成 */
@@ -302,8 +244,9 @@ function generatePrompt() {
         .catch(() => {
             msg.textContent = "コピーに失敗しました。手動でコピーしてください。";
         });
-}
+
     showAfterModal();
+}
 
 /* 停止 */
 function stopGenerate() {
