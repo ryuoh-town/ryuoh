@@ -4,24 +4,46 @@
 <meta charset="UTF-8">
 <title>補助金サポート Canvas</title>
 
-<link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-body { font-family: sans-serif; line-height: 1.6; }
+body {
+    font-family: sans-serif;
+    margin: 20px;
+}
+
+h1 { margin-bottom: 5px; }
+
 section { margin-bottom: 20px; }
-.panel { display: none; }
+
+.accordion {
+    width: 100%;
+    padding: 10px;
+    text-align: left;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background: #f9f9f9;
+    margin-top: 5px;
+}
+
+.panel {
+    display: none;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-top: none;
+}
+
 .panel.open { display: block; }
 
-.accordion.active .icon i {
-    transform: rotate(90deg);
+textarea {
+    width: 100%;
+    margin-top: 5px;
 }
 
-.modal-overlay {
-    display: none;
-}
-.modal-overlay.show {
-    display: flex;
+button {
+    margin-top: 5px;
+    padding: 8px 12px;
+    cursor: pointer;
 }
 
 #result {
@@ -29,10 +51,33 @@ section { margin-bottom: 20px; }
     background: #f5f5f5;
     padding: 15px;
     margin-top: 20px;
+    border: 1px solid #ccc;
 }
+
 #message {
-    color: red;
     margin-top: 10px;
+    color: red;
+}
+
+/* モーダル */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-overlay.show {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    max-width: 400px;
 }
 </style>
 </head>
@@ -40,42 +85,35 @@ section { margin-bottom: 20px; }
 <body>
 
 <h1>補助金サポート Canvas</h1>
-<p>必要事項を入力すると、補助金申請に必要な要項をAIに考えさせる文章ができます。</p>
+<p>入力するとAI用プロンプトを生成します</p>
 
-<form id="form" onsubmit="return false;">
+<form onsubmit="return false;">
 
 <section>
-<div class="step-title">
-<i class="fa-solid fa-list-check"></i> Step 1：補助金の種類を選択
-</div>
-
+<h3>Step1：補助金</h3>
 <select id="type">
 <option value="jizoku">小規模事業者持続化補助金</option>
-<option value="mono">ものづくり補助金（準備中）</option>
-<option value="saikouchiku">事業再構築補助金（準備中）</option>
 </select>
 </section>
 
 <section>
-<div class="step-title">
-<i class="fa-solid fa-pen-to-square"></i> Step 2：事業者情報の入力
-</div>
+<h3>Step2：入力</h3>
 
-<button type="button" class="accordion">① 解決したい課題 <span class="icon"><i class="fa-solid fa-chevron-right"></i></span></button>
+<button type="button" class="accordion">① 課題</button>
 <div class="panel">
 <button type="button" onclick="showExample('problem')">例文</button>
 <textarea id="problem"></textarea>
 </div>
 
-<button type="button" class="accordion">②-1 いきさつ</button>
+<button type="button" class="accordion">② いきさつ</button>
 <div class="panel">
-<button onclick="showExample('history')">例文</button>
+<button type="button" onclick="showExample('history')">例文</button>
 <textarea id="history"></textarea>
 </div>
 
 <button type="button" class="accordion">③ 申請内容</button>
 <div class="panel">
-<button onclick="showExample('apply')">例文</button>
+<button type="button" onclick="showExample('apply')">例文</button>
 <textarea id="apply"></textarea>
 </div>
 
@@ -91,94 +129,124 @@ section { margin-bottom: 20px; }
 <div id="message"></div>
 <pre id="result"></pre>
 
-<!-- モーダル -->
+<!-- 例文モーダル -->
 <div id="exampleModal" class="modal-overlay">
 <div class="modal-content">
 <p id="exampleText"></p>
-<button onclick="insertExample()">挿入</button>
-<button onclick="closeExample()">閉じる</button>
+<button type="button" onclick="insertExample()">挿入</button>
+<button type="button" onclick="closeExample()">閉じる</button>
 </div>
 </div>
 
+<!-- 完了モーダル -->
 <div id="afterModal" class="modal-overlay">
 <div class="modal-content">
 <p>コピーしました</p>
-<button onclick="closeAfterModal()">OK</button>
+<button type="button" onclick="closeAfterModal()">OK</button>
 </div>
 </div>
 
 <script>
 // アコーディオン
-document.querySelectorAll(".accordion").forEach(acc => {
-    acc.addEventListener("click", () => {
-        acc.classList.toggle("active");
-        acc.nextElementSibling.classList.toggle("open");
+document.querySelectorAll(".accordion").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+        btn.classList.toggle("active");
+        btn.nextElementSibling.classList.toggle("open");
     });
 });
 
 // 例文
 const examples = {
-    problem: "課題の例文",
-    history: "いきさつの例文",
-    apply: "申請内容の例文"
+    problem:"売上が減少しており、新規顧客の獲得が課題",
+    history:"地域密着で事業を継続してきた",
+    apply:"新しい設備を導入し生産性向上を図る"
 };
 
 let currentField = null;
 
-function showExample(field) {
+function showExample(field){
     currentField = field;
     document.getElementById("exampleText").textContent = examples[field];
     document.getElementById("exampleModal").classList.add("show");
 }
 
-function closeExample() {
+function closeExample(){
     document.getElementById("exampleModal").classList.remove("show");
 }
 
-function insertExample() {
+function insertExample(){
+    if(!currentField) return;
+
     const target = document.getElementById(currentField);
-    if (target.value && !confirm("上書きしますか？")) return;
+    if(target.value && !confirm("上書きしますか？")) return;
+
     target.value = examples[currentField];
     closeExample();
 }
 
 // 外クリックで閉じる
-document.querySelectorAll(".modal-overlay").forEach(modal => {
-    modal.addEventListener("click", e => {
-        if (e.target === modal) modal.classList.remove("show");
+document.querySelectorAll(".modal-overlay").forEach(m=>{
+    m.addEventListener("click",(e)=>{
+        if(e.target===m) m.classList.remove("show");
     });
 });
 
-// プロンプト生成
-function generatePrompt() {
+// プロンプト生成（安定版）
+function generatePrompt(){
     const problem = document.getElementById("problem").value.trim();
+    const history = document.getElementById("history").value.trim();
     const apply = document.getElementById("apply").value.trim();
 
     const msg = document.getElementById("message");
     const result = document.getElementById("result");
 
-    if (!problem || !apply) {
-        msg.textContent = "必須項目を入力してください";
+    msg.textContent = "";
+
+    if(!problem || !apply){
+        msg.textContent = "⚠ 必須項目（課題・申請内容）を入力してください";
+        result.textContent = "";
         return;
     }
 
-    const prompt = `課題:${problem}\n申請:${apply}`;
+    const prompt = `
+あなたは補助金コンサルタントです。
+
+課題：
+${problem}
+
+いきさつ：
+${history || "未記入"}
+
+申請内容：
+${apply}
+
+上記をもとに申請書を作成してください。
+`.trim();
 
     result.textContent = prompt;
-    msg.textContent = "コピーしました";
 
-    navigator.clipboard.writeText(prompt).catch(()=>{});
+    // クリップボード（安全版）
+    if(navigator.clipboard){
+        navigator.clipboard.writeText(prompt).then(()=>{
+            msg.textContent = "✅ コピーしました";
+        }).catch(()=>{
+            msg.textContent = "⚠ コピー失敗（手動コピーしてください）";
+        });
+    }else{
+        msg.textContent = "⚠ コピー非対応ブラウザ";
+    }
 
     document.getElementById("afterModal").classList.add("show");
 }
 
 // 停止
-function stopGenerate() {
+function stopGenerate(){
     document.getElementById("result").textContent = "";
     document.getElementById("message").textContent = "停止しました";
 }
 
-function closeAfterModal() {
+// モーダル閉じる
+function closeAfterModal(){
     document.getElementById("afterModal").classList.remove("show");
 }
 </script>
