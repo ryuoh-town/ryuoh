@@ -13,7 +13,7 @@
 <h1>補助金サポート Canvas</h1>
 <p>必要事項を入力すると、補助金申請に必要な要項をAIに考えさせる文章ができます。</p>
 
-<form id="form" onsubmit="return false;">
+<form id="form">
 
     <!-- Step 1 -->
     <section>
@@ -148,13 +148,10 @@
 <script>
 /* アコーディオン */
 document.addEventListener("DOMContentLoaded", () => {
-    const accordions = document.querySelectorAll(".accordion");
-
-    accordions.forEach(acc => {
+    document.querySelectorAll(".accordion").forEach(acc => {
         acc.addEventListener("click", () => {
             acc.classList.toggle("active");
-            const panel = acc.nextElementSibling;
-            panel.classList.toggle("open");
+            acc.nextElementSibling.classList.toggle("open");
         });
     });
 });
@@ -197,8 +194,7 @@ function insertExample() {
 
     const target = document.getElementById(currentField);
     if (target.value.trim() !== "") {
-        const ok = confirm("現在の入力内容は上書きされます。よろしいですか？");
-        if (!ok) return;
+        if (!confirm("現在の入力内容は上書きされます。よろしいですか？")) return;
     }
 
     target.value = examples[currentField];
@@ -215,7 +211,7 @@ function closeAfterModal() {
     document.getElementById("afterModal").classList.remove("show");
 }
 
-/* 小規模事業者持続化補助金用テンプレート生成 */
+/* 小規模事業者持続化補助金テンプレート */
 function getJizokuTemplate(problem, history, location, products, strengths, apply) {
     return `
 あなたは「小規模事業者持続化補助金」の申請書を作成する専門コンサルタントです。
@@ -264,7 +260,6 @@ function generatePrompt() {
     let prompt = "";
 
     if (type === "jizoku") {
-        // 簡易バリデーション（最低限、課題と申請内容は入力を促す）
         if (!problem || !apply) {
             msg.style.display = "block";
             msg.textContent = "「解決したい課題」と「補助金申請したい内容」は、できるだけ具体的に入力してください。";
@@ -279,28 +274,29 @@ function generatePrompt() {
     result.textContent = prompt;
 
     msg.style.display = "block";
-    msg.textContent = "プロンプトをコピーしました。AIツールに貼り付けて実行してください。";
 
+    /* コピー成功時のみモーダル表示 */
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(prompt)
+            .then(() => {
+                msg.textContent = "プロンプトをコピーしました。AIツールに貼り付けて実行してください。";
+                showAfterModal();
+            })
             .catch(() => {
                 msg.textContent = "自動コピーに失敗しました。表示されているプロンプトを手動でコピーしてください。";
             });
     } else {
         msg.textContent = "このブラウザでは自動コピーに対応していません。表示されているプロンプトを手動でコピーしてください。";
     }
-
-    showAfterModal();
 }
 
 /* 停止 */
 function stopGenerate() {
-    document.getElementById("result").textContent = "生成を停止しました。";
+    document.getElementById("result").textContent = "";
     const msg = document.getElementById("message");
     msg.style.display = "none";
 }
 </script>
-
 
 </body>
 </html>
