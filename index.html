@@ -1,255 +1,307 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>補助金サポート Canvas</title>
+    <meta charset="UTF-8">
+    <title>補助金サポート Canvas</title>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-<style>
-body {
-    font-family: sans-serif;
-    margin: 20px;
-}
-
-h1 { margin-bottom: 5px; }
-
-section { margin-bottom: 20px; }
-
-.accordion {
-    width: 100%;
-    padding: 10px;
-    text-align: left;
-    cursor: pointer;
-    border: 1px solid #ccc;
-    background: #f9f9f9;
-    margin-top: 5px;
-}
-
-.panel {
-    display: none;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-top: none;
-}
-
-.panel.open { display: block; }
-
-textarea {
-    width: 100%;
-    margin-top: 5px;
-}
-
-button {
-    margin-top: 5px;
-    padding: 8px 12px;
-    cursor: pointer;
-}
-
-#result {
-    white-space: pre-wrap;
-    background: #f5f5f5;
-    padding: 15px;
-    margin-top: 20px;
-    border: 1px solid #ccc;
-}
-
-#message {
-    margin-top: 10px;
-    color: red;
-}
-
-/* モーダル */
-.modal-overlay {
-    display: none;
-    position: fixed;
-    top:0; left:0;
-    width:100%; height:100%;
-    background: rgba(0,0,0,0.5);
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-overlay.show {
-    display: flex;
-}
-
-.modal-content {
-    background: white;
-    padding: 20px;
-    max-width: 400px;
-}
-</style>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
 <body>
 
 <h1>補助金サポート Canvas</h1>
-<p>入力するとAI用プロンプトを生成します</p>
+<p>必要事項を入力すると、補助金申請に必要な要項をAIに考えさせる文章ができます。</p>
 
-<form onsubmit="return false;">
+<form id="form" onsubmit="return false;">
 
-<section>
-<h3>Step1：補助金</h3>
-<select id="type">
-<option value="jizoku">小規模事業者持続化補助金</option>
-</select>
-</section>
+    <!-- Step 1 -->
+    <section>
+        <div class="step-title">
+            <i class="fa-solid fa-list-check"></i> Step 1：補助金の種類を選択
+        </div>
 
-<section>
-<h3>Step2：入力</h3>
+        <label for="type">補助金の種類：</label>
+        <select id="type" class="input-select">
+            <option value="jizoku">小規模事業者持続化補助金</option>
+            <option value="mono">ものづくり補助金（準備中）</option>
+            <option value="saikouchiku">事業再構築補助金（準備中）</option>
+        </select>
+    </section>
 
-<button type="button" class="accordion">① 課題</button>
-<div class="panel">
-<button type="button" onclick="showExample('problem')">例文</button>
-<textarea id="problem"></textarea>
-</div>
+    <!-- Step 2 -->
+    <section>
+        <div class="step-title">
+            <i class="fa-solid fa-pen-to-square"></i> Step 2：事業者情報の入力
+        </div>
 
-<button type="button" class="accordion">② いきさつ</button>
-<div class="panel">
-<button type="button" onclick="showExample('history')">例文</button>
-<textarea id="history"></textarea>
-</div>
+        <!-- ① 解決したい課題 -->
+        <button type="button" class="accordion">
+            <span class="badge">①</span>
+            <span class="title">解決したい課題</span>
+            <span class="icon"><i class="fa-solid fa-chevron-right"></i></span>
+        </button>
+        <div class="panel">
+            <button type="button" class="example" onclick="showExample('problem')">例文を見る</button>
+            <textarea id="problem" rows="4" placeholder="解決したい課題を具体的に記入してください。"></textarea>
+        </div>
 
-<button type="button" class="accordion">③ 申請内容</button>
-<div class="panel">
-<button type="button" onclick="showExample('apply')">例文</button>
-<textarea id="apply"></textarea>
-</div>
+        <!-- ②-1 -->
+        <button type="button" class="accordion">
+            <span class="badge">②-1</span>
+            <span class="title">事業を始めてからのいきさつ</span>
+            <span class="icon"><i class="fa-solid fa-chevron-right"></i></span>
+        </button>
+        <div class="panel">
+            <button type="button" class="example" onclick="showExample('history')">例文を見る</button>
+            <textarea id="history" rows="4" placeholder="創業の経緯やこれまでの歩みを記入してください。"></textarea>
+        </div>
 
-</section>
+        <!-- ②-2 -->
+        <button type="button" class="accordion">
+            <span class="badge">②-2</span>
+            <span class="title">所在地・商圏</span>
+            <span class="icon"><i class="fa-solid fa-chevron-right"></i></span>
+        </button>
+        <div class="panel">
+            <button type="button" class="example" onclick="showExample('location')">例文を見る</button>
+            <textarea id="location" rows="4" placeholder="所在地や主な商圏、立地の特徴などを記入してください。"></textarea>
+        </div>
 
-<section>
-<button type="button" onclick="generatePrompt()">作成</button>
-<button type="button" onclick="stopGenerate()">停止</button>
-</section>
+        <!-- ②-3 -->
+        <button type="button" class="accordion">
+            <span class="badge">②-3</span>
+            <span class="title">取り扱い商品・サービス</span>
+            <span class="icon"><i class="fa-solid fa-chevron-right"></i></span>
+        </button>
+        <div class="panel">
+            <button type="button" class="example" onclick="showExample('products')">例文を見る</button>
+            <textarea id="products" rows="4" placeholder="主な商品・サービスと売上構成などを記入してください。"></textarea>
+        </div>
+
+        <!-- ②-4 -->
+        <button type="button" class="accordion">
+            <span class="badge">②-4</span>
+            <span class="title">強みと経営課題</span>
+            <span class="icon"><i class="fa-solid fa-chevron-right"></i></span>
+        </button>
+        <div class="panel">
+            <button type="button" class="example" onclick="showExample('strengths')">例文を見る</button>
+            <textarea id="strengths" rows="6" placeholder="自社の強み・弱み、経営課題などを箇条書きで記入してください。"></textarea>
+        </div>
+
+        <!-- ③ -->
+        <button type="button" class="accordion">
+            <span class="badge">③</span>
+            <span class="title">補助金申請したい内容</span>
+            <span class="icon"><i class="fa-solid fa-chevron-right"></i></span>
+        </button>
+        <div class="panel">
+            <button type="button" class="example" onclick="showExample('apply')">例文を見る</button>
+            <textarea id="apply" rows="4" placeholder="導入したい設備や取り組み内容を記入してください。"></textarea>
+        </div>
+    </section>
+
+    <!-- Step 3 -->
+    <section>
+        <div class="step-title">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Step 3：プロンプト生成
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="generate" onclick="generatePrompt()">作成</button>
+            <button type="button" class="stop" onclick="stopGenerate()">停止</button>
+        </div>
+    </section>
 
 </form>
 
-<div id="message"></div>
-<pre id="result"></pre>
+<div id="message" style="display:none;"></div>
+<div id="result"></div>
 
 <!-- 例文モーダル -->
 <div id="exampleModal" class="modal-overlay">
-<div class="modal-content">
-<p id="exampleText"></p>
-<button type="button" onclick="insertExample()">挿入</button>
-<button type="button" onclick="closeExample()">閉じる</button>
-</div>
+    <div class="modal-content">
+        <h3>例文</h3>
+        <p id="exampleText" class="modal-text"></p>
+
+        <div class="modal-buttons">
+            <button class="generate" type="button" onclick="insertExample()">この例文を挿入する</button>
+            <button class="stop" type="button" onclick="closeExample()">閉じる</button>
+        </div>
+    </div>
 </div>
 
-<!-- 完了モーダル -->
+<!-- 生成後の案内モーダル -->
 <div id="afterModal" class="modal-overlay">
-<div class="modal-content">
-<p>コピーしました</p>
-<button type="button" onclick="closeAfterModal()">OK</button>
-</div>
+    <div class="modal-content">
+        <h3>プロンプトをコピーしました</h3>
+        <p class="modal-text">
+            生成AI（ChatGPT / Copilot / Claude など）に貼り付けて実行してください。
+        </p>
+        <div class="modal-buttons">
+            <button class="generate" type="button" onclick="closeAfterModal()">OK</button>
+        </div>
+    </div>
 </div>
 
 <script>
-// アコーディオン
-document.querySelectorAll(".accordion").forEach(btn=>{
-    btn.addEventListener("click",()=>{
-        btn.classList.toggle("active");
-        btn.nextElementSibling.classList.toggle("open");
+/* アコーディオン */
+document.addEventListener("DOMContentLoaded", () => {
+    const accordions = document.querySelectorAll(".accordion");
+
+    accordions.forEach(acc => {
+        acc.addEventListener("click", () => {
+            acc.classList.toggle("active");
+            const panel = acc.nextElementSibling;
+            panel.classList.toggle("open");
+        });
     });
 });
 
-// 例文
+/* 例文データ */
 const examples = {
-    problem:"売上が減少しており、新規顧客の獲得が課題",
-    history:"地域密着で事業を継続してきた",
-    apply:"新しい設備を導入し生産性向上を図る"
+    problem: "私が生産している○○を効率的に生産し、多くの方に販売するために△△を導入したい。",
+    history: "○○年に創業し、△△町を中心に地域密着型のサービスを展開してきました。",
+    location: "△△町を中心に○○や□□の顧客も抱えています。主要道路沿いで視認性が高く、交通の便も良い立地です。",
+    products: "売上は○○が●％、△△が●％、□□が●％となっています。",
+    strengths:
+`強み
+・地域密着型事業者として信頼が高い
+・多様な商品を取り扱っているため、多様な注文に対応可能
+
+弱み
+・商圏人口が減少傾向にあり販路拡大が必要
+・生産場所が狭く、機械も老朽化している
+・DX化が遅れており、生産性が低い`,
+    apply: "○○を効率的に生産するため、オートメーション化された△△を導入する。"
 };
 
 let currentField = null;
 
-function showExample(field){
+/* モーダル表示 */
+function showExample(field) {
     currentField = field;
     document.getElementById("exampleText").textContent = examples[field];
     document.getElementById("exampleModal").classList.add("show");
 }
 
-function closeExample(){
+/* モーダル閉じる */
+function closeExample() {
     document.getElementById("exampleModal").classList.remove("show");
 }
 
-function insertExample(){
-    if(!currentField) return;
+/* 例文挿入 */
+function insertExample() {
+    if (!currentField) return;
 
     const target = document.getElementById(currentField);
-    if(target.value && !confirm("上書きしますか？")) return;
+    if (target.value.trim() !== "") {
+        const ok = confirm("現在の入力内容は上書きされます。よろしいですか？");
+        if (!ok) return;
+    }
 
     target.value = examples[currentField];
     closeExample();
 }
 
-// 外クリックで閉じる
-document.querySelectorAll(".modal-overlay").forEach(m=>{
-    m.addEventListener("click",(e)=>{
-        if(e.target===m) m.classList.remove("show");
-    });
-});
+/* afterModal 表示 */
+function showAfterModal() {
+    document.getElementById("afterModal").classList.add("show");
+}
 
-// プロンプト生成（安定版）
-function generatePrompt(){
-    const problem = document.getElementById("problem").value.trim();
-    const history = document.getElementById("history").value.trim();
-    const apply = document.getElementById("apply").value.trim();
+/* afterModal 閉じる */
+function closeAfterModal() {
+    document.getElementById("afterModal").classList.remove("show");
+}
+
+/* 小規模事業者持続化補助金用テンプレート生成 */
+function getJizokuTemplate(problem, history, location, products, strengths, apply) {
+    return `
+あなたは「小規模事業者持続化補助金」の申請書を作成する専門コンサルタントです。
+以下の事業者情報をもとに、採択されやすい申請書の素案（日本語）を作成してください。
+
+【事業者情報】
+1. 解決したい課題：
+${problem || "（未記入）"}
+
+2. 事業を始めてからのいきさつ：
+${history || "（未記入）"}
+
+3. 所在地・商圏：
+${location || "（未記入）"}
+
+4. 取り扱い商品・サービス：
+${products || "（未記入）"}
+
+5. 強みと経営課題：
+${strengths || "（未記入）"}
+
+6. 補助金申請したい内容（実施したい取組）：
+${apply || "（未記入）"}
+
+【出力してほしい内容】
+・小規模事業者持続化補助金の様式に沿った構成で、
+  「経営計画」「補助事業計画」の両方を意識した文章を作成してください。
+・見出しや箇条書きを適宜用いて、読みやすく整理してください。
+・専門用語は使いすぎず、審査員に伝わりやすい平易な表現を心がけてください。
+`.trim();
+}
+
+/* プロンプト生成 */
+function generatePrompt() {
+    const problem   = document.getElementById("problem").value.trim();
+    const history   = document.getElementById("history").value.trim();
+    const location  = document.getElementById("location").value.trim();
+    const products  = document.getElementById("products").value.trim();
+    const strengths = document.getElementById("strengths").value.trim();
+    const apply     = document.getElementById("apply").value.trim();
+    const type      = document.getElementById("type").value;
 
     const msg = document.getElementById("message");
     const result = document.getElementById("result");
 
-    msg.textContent = "";
+    let prompt = "";
 
-    if(!problem || !apply){
-        msg.textContent = "⚠ 必須項目（課題・申請内容）を入力してください";
-        result.textContent = "";
-        return;
+    if (type === "jizoku") {
+        // 簡易バリデーション（最低限、課題と申請内容は入力を促す）
+        if (!problem || !apply) {
+            msg.style.display = "block";
+            msg.textContent = "「解決したい課題」と「補助金申請したい内容」は、できるだけ具体的に入力してください。";
+            result.textContent = "";
+            return;
+        }
+        prompt = getJizokuTemplate(problem, history, location, products, strengths, apply);
+    } else {
+        prompt = "この補助金テンプレートは現在準備中です。";
     }
-
-    const prompt = `
-あなたは補助金コンサルタントです。
-
-課題：
-${problem}
-
-いきさつ：
-${history || "未記入"}
-
-申請内容：
-${apply}
-
-上記をもとに申請書を作成してください。
-`.trim();
 
     result.textContent = prompt;
 
-    // クリップボード（安全版）
-    if(navigator.clipboard){
-        navigator.clipboard.writeText(prompt).then(()=>{
-            msg.textContent = "✅ コピーしました";
-        }).catch(()=>{
-            msg.textContent = "⚠ コピー失敗（手動コピーしてください）";
-        });
-    }else{
-        msg.textContent = "⚠ コピー非対応ブラウザ";
+    msg.style.display = "block";
+    msg.textContent = "プロンプトをコピーしました。AIツールに貼り付けて実行してください。";
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(prompt)
+            .catch(() => {
+                msg.textContent = "自動コピーに失敗しました。表示されているプロンプトを手動でコピーしてください。";
+            });
+    } else {
+        msg.textContent = "このブラウザでは自動コピーに対応していません。表示されているプロンプトを手動でコピーしてください。";
     }
 
-    document.getElementById("afterModal").classList.add("show");
+    showAfterModal();
 }
 
-// 停止
-function stopGenerate(){
-    document.getElementById("result").textContent = "";
-    document.getElementById("message").textContent = "停止しました";
-}
-
-// モーダル閉じる
-function closeAfterModal(){
-    document.getElementById("afterModal").classList.remove("show");
+/* 停止 */
+function stopGenerate() {
+    document.getElementById("result").textContent = "生成を停止しました。";
+    const msg = document.getElementById("message");
+    msg.style.display = "none";
 }
 </script>
 
+</body>
+</html>
 </body>
 </html>
