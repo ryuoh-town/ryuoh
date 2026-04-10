@@ -333,7 +333,9 @@ button.stop:hover {
     align-items: center;
     z-index: 9999;
 }
-
+.modal-overlay.show {
+    display: flex;
+}
 .modal-content {
     background: #ffffff;
     padding: 24px 24px 20px;
